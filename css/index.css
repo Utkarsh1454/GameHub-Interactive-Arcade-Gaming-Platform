@@ -256,3 +256,9 @@ footer {
     .hero .cta-section { justify-content: center; }
     .features-grid { grid-template-columns: 1fr; }
 }
+
+@media (max-width: 480px) {
+    .hero-title { font-size: 36px; }
+    .hero-subtitle { font-size: 16px; }
+    .section-title { font-size: 32px; }
+}

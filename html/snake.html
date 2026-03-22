@@ -17,6 +17,15 @@
     </div>
     <div class="info">Use arrow keys to move. Score: <span id="score">0</span></div>
 
+    <div class="mobile-controls centered">
+        <div class="d-pad">
+            <div class="btn-touch d-up" id="btn-up">▲</div>
+            <div class="btn-touch d-left" id="btn-left">◀</div>
+            <div class="btn-touch d-right" id="btn-right">▶</div>
+            <div class="btn-touch d-down" id="btn-down">▼</div>
+        </div>
+    </div>
+
     <script>
     // Neon 2D Snake
     const canvas = document.getElementById('game');
@@ -93,6 +102,22 @@
     });
     document.getElementById('start').addEventListener('click', start);
     document.getElementById('pause').addEventListener('click', pause);
+
+    // mobile controls
+    function bindTouch(id, nx, ny) {
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        if(isGameOverState){ reset(); start(); return; }
+        if(!running && !isGameOverState) start();
+        if((nx !== 0 && dir.x !== -nx) || (ny !== 0 && dir.y !== -ny)) dir = {x: nx, y: ny};
+      }, {passive: false});
+    }
+    bindTouch('btn-up', 0, -1);
+    bindTouch('btn-down', 0, 1);
+    bindTouch('btn-left', -1, 0);
+    bindTouch('btn-right', 1, 0);
 
     // init
     reset();

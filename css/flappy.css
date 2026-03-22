@@ -10,7 +10,7 @@ h1 {
   text-align: center;
 }
 
-canvas {
+#game {
   background: linear-gradient(to bottom, #70c5ce, #32a3a8);
   border: 3px solid #f1c40f;
   border-radius: 16px;
@@ -20,6 +20,9 @@ canvas {
   box-shadow: 0 0 30px rgba(241, 196, 15, 0.3), 0 10px 30px rgba(0, 0, 0, 0.5);
   display: block;
   margin: 0 auto;
+  touch-action: none;
+  align-self: center;
+  aspect-ratio: 2 / 3;
 }
 
 .controls {

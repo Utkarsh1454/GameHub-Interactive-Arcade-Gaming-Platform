@@ -238,5 +238,88 @@ h1, h2 {
   nav {
     gap: 16px;
     justify-content: center;
+    flex-wrap: wrap;
   }
 }
+
+/* --- MOBILE CONTROLS --- */
+.mobile-controls {
+  display: none;
+  width: 100%;
+  max-width: 400px;
+  margin: 16px auto 0;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.mobile-controls.centered {
+  justify-content: center;
+}
+
+.d-pad {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, 50px);
+  grid-template-rows: repeat(3, 50px);
+}
+
+.action-btns {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-touch {
+  background: var(--glass-bg);
+  border: 2px solid var(--neon-cyan);
+  border-radius: 50%;
+  color: var(--neon-cyan);
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0, 242, 254, 0.2);
+  transition: all 0.1s;
+}
+
+.btn-touch:active, .btn-touch.active-touch {
+  background: rgba(0, 242, 254, 0.3);
+  box-shadow: 0 0 20px rgba(0, 242, 254, 0.6);
+  transform: scale(0.92);
+}
+
+.d-up { grid-column: 2; grid-row: 1; }
+.d-left { grid-column: 1; grid-row: 2; }
+.d-right { grid-column: 3; grid-row: 2; }
+.d-down { grid-column: 2; grid-row: 3; }
+
+.action-btns .btn-touch {
+  width: 60px;
+  height: 60px;
+  border-color: var(--neon-magenta);
+  color: var(--neon-magenta);
+  box-shadow: 0 0 10px rgba(240, 147, 251, 0.2);
+}
+
+.action-btns .btn-touch:active, .action-btns .btn-touch.active-touch {
+  background: rgba(240, 147, 251, 0.3);
+  box-shadow: 0 0 20px rgba(240, 147, 251, 0.6);
+}
+
+/* Ensure canvases don't break viewport on mobile */
+canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+@media (max-width: 768px) {
+  .mobile-controls {
+    display: flex;
+  }
+}
+

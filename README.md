@@ -1,7 +1,5 @@
 # 🎮 GameHub — High-Performance Web Arcade Platform  
 
-🌐 **Live Demo:** https://utkarsh1454.github.io/GameHub-Interactive-Arcade-Gaming-Platform/  
-
 ![GameHub Dashboard Overview](images/hero.png)
 
 **GameHub** is a high-performance, browser-native arcade platform engineered for **low-latency gameplay**, **modular architecture**, and **AI-driven game mechanics**. Built entirely with **Vanilla JavaScript, HTML5 Canvas, and modern CSS3**, it delivers a seamless, app-like experience without external dependencies.

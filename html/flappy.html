@@ -93,11 +93,18 @@ window.addEventListener('keydown', e=>{
     flap(); 
   } 
 });
-canvas.addEventListener('click', ()=>{ 
+canvas.addEventListener('click', (e)=>{ 
+  e.preventDefault();
   if(isGameOverState){ reset(); start(); return; }
   if(!alive && !isGameOverState) start(); 
   flap(); 
 });
+canvas.addEventListener('touchstart', (e)=>{ 
+  e.preventDefault();
+  if(isGameOverState){ reset(); start(); return; }
+  if(!alive && !isGameOverState) start(); 
+  flap(); 
+}, {passive: false});
 document.getElementById('start').addEventListener('click', ()=>start());
 document.getElementById('restart').addEventListener('click', ()=>{ reset(); start(); });
 reset();

@@ -224,4 +224,30 @@ document.getElementById('resetBtn').addEventListener('click', ()=>{
   arena.forEach(row=>row.fill(0)); player.score=0; player.lines=0; updateScore(); draw();
 });
 
+// Mobile Controls
+function bindTetrisTouch(id, action) {
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.addEventListener('touchstart', (e)=>{
+    e.preventDefault();
+    if(action) action();
+  }, {passive: false});
+}
+
+bindTetrisTouch('t-left', () => { if(!isGameOverState) playerMove(-1); });
+bindTetrisTouch('t-right', () => { if(!isGameOverState) playerMove(1); });
+bindTetrisTouch('t-down', () => { if(!isGameOverState) playerDrop(); });
+bindTetrisTouch('t-rot', () => { if(!isGameOverState) playerRotate(1); });
+bindTetrisTouch('t-drop', () => {
+    if(isGameOverState) {
+        isGameOverState = false;
+        arena.forEach(row=>row.fill(0)); player.score=0; player.lines=0; updateScore();
+        playerReset(); lastTime=0; requestAnimationFrame(update);
+        return;
+    }
+    while(!collide(arena, player)){ player.pos.y++; }
+    player.pos.y--; merge(arena, player); playerReset(); sweep(); updateScore();
+    dropCounter = 0; gameAudio.drop();
+});
+
 playerReset(); draw(); updateScore();

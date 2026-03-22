@@ -83,4 +83,9 @@
   .rank, .score {
     font-size: 14px;
   }
+  .board {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
 }

@@ -41,6 +41,17 @@
         <h1 class="fade-in-up">Spacewave</h1>
         <canvas id="gameCanvas" width="600" height="400"></canvas>
         <div class="controls-info">Use Left/Right Arrows to move. Space to shoot.</div>
+
+        <div class="mobile-controls centered" style="margin-top: 24px; gap: 40px;">
+            <div class="action-btns" style="gap: 20px;">
+                <div class="btn-touch" id="sw-left" style="width: 60px; height: 60px;">◀</div>
+                <div class="btn-touch" id="sw-right" style="width: 60px; height: 60px;">▶</div>
+            </div>
+            <div class="action-btns">
+                <div class="btn-touch" id="sw-shoot" style="width: 70px; height: 70px; font-size: 16px; font-weight: bold; border-color: var(--neon-green); color: var(--neon-green); box-shadow: 0 0 10px rgba(14, 240, 122, 0.2);">FIRE</div>
+            </div>
+        </div>
+
         <a href="library.html" class="btn btn-home">Back to Library</a>
     </div>
 
@@ -195,7 +206,7 @@
             ctx.fillStyle = '#fff';
             ctx.font = '20px Outfit';
             ctx.shadowBlur = 0;
-            ctx.fillText('Score: ' + score, 15, 30);
+            ctx.fillText('Score: ' + score, 10, 30);
             
             if (isGameOver) {
                 if (!hasSavedScore && score > 0) {
@@ -227,6 +238,28 @@
             }
         }
         
+        // Mobile Controls
+        function bindSWTouch(id, startCb, endCb) {
+            const el = document.getElementById(id);
+            if(!el) return;
+            el.addEventListener('touchstart', (e)=>{ e.preventDefault(); startCb(e); }, {passive: false});
+            if(endCb) {
+                el.addEventListener('touchend', (e)=>{ e.preventDefault(); endCb(e); }, {passive: false});
+                el.addEventListener('touchcancel', (e)=>{ e.preventDefault(); endCb(e); }, {passive: false});
+            }
+        }
+        
+        bindSWTouch('sw-left', () => { ship.dx = -ship.speed; }, () => { if(ship.dx < 0) ship.dx = 0; });
+        bindSWTouch('sw-right', () => { ship.dx = ship.speed; }, () => { if(ship.dx > 0) ship.dx = 0; });
+        bindSWTouch('sw-shoot', () => {
+             if (isGameOver) {
+                 resetGame();
+             } else if (bullets.length < 3) {
+                 bullets.push({ x: ship.x, y: ship.y - 15, width: 4, height: 10, speed: 9 });
+                 gameAudio.shoot();
+             }
+        });
+
         update();
     </script>
     <script src="../js/audio.js"></script>

@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Neon Chess — GameHub</title>
+    <link rel="stylesheet" href="../css/global.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <style>
+        .game-wrapper {
+            max-width: 800px;
+            margin: 40px auto;
+            text-align: center;
+        }
+        h1 { margin-bottom: 20px; color: var(--neon-cyan); }
+        .board-container {
+            display: inline-block;
+            border: 4px solid var(--neon-cyan);
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(0, 242, 254, 0.3);
+            padding: 10px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(8, 60px);
+            grid-template-rows: repeat(8, 60px);
+            border: 2px solid var(--glass-border);
+            position: relative;
+        }
+        .square {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+            position: relative;
+        }
+        .light { background: rgba(0, 242, 254, 0.05); }
+        .dark { background: rgba(240, 147, 251, 0.1); }
+        
+        .square.selected {
+            background: rgba(0, 242, 254, 0.4) !important;
+            box-shadow: inset 0 0 15px var(--neon-cyan);
+        }
+        .square.valid-move::after {
+            content: '';
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: rgba(14, 240, 122, 0.5);
+            position: absolute;
+            pointer-events: none;
+            box-shadow: 0 0 10px rgba(14, 240, 122, 0.8);
+        }
+        .square.valid-capture {
+            background: rgba(255, 107, 107, 0.3) !important;
+            box-shadow: inset 0 0 15px rgba(255, 107, 107, 0.8);
+        }
+        
+        .piece-w { color: var(--neon-cyan); text-shadow: 0 0 10px var(--neon-cyan); z-index: 2; }
+        .piece-b { color: var(--neon-magenta); text-shadow: 0 0 10px var(--neon-magenta); z-index: 2; }
+        
+        .status {
+            margin: 20px 0;
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        .status span { color: var(--neon-cyan); }
+        
+        .game-over-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            backdrop-filter: blur(4px);
+        }
+        .game-over-text {
+            color: #ff6b6b;
+            font-size: 42px;
+            font-weight: 800;
+            text-shadow: 0 0 15px #ff6b6b;
+            margin-bottom: 10px;
+        }
+        .game-over-sub {
+            color: var(--neon-cyan);
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 600px) {
+            .board {
+                grid-template-columns: repeat(8, 40px);
+                grid-template-rows: repeat(8, 40px);
+            }
+            .square { width: 40px; height: 40px; font-size: 24px; }
+        }
+        select.btn option { background: #020617; color: var(--neon-cyan); }
+        .coin-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+            backdrop-filter: blur(8px);
+        }
+        .coin {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #ffd24d, #b38600);
+            box-shadow: 0 0 30px #ffd24d;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: 900;
+            color: #fff;
+            animation: flip 0.2s linear infinite;
+        }
+        @keyframes flip {
+            0% { transform: scaleY(1); }
+            50% { transform: scaleY(0); }
+            100% { transform: scaleY(1); }
+        }
+        .coin-text {
+            color: var(--neon-cyan);
+            font-size: 24px;
+            font-weight: 700;
+            text-shadow: 0 0 10px var(--neon-cyan);
+            text-align: center;
+            padding: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a class="logo" href="../index.html">🎮 GameHub</a>
+        <nav>
+            <a href="library.html">Library</a>
+            <a href="leaderboard.html">Leaderboard</a>
+            <div id="userSection"></div>
+        </nav>
+    </header>
+
+    <div class="game-wrapper">
+        <h1 class="fade-in-up">Neon Chess</h1>
+        <div class="status" id="status">Current Turn: <span id="turnDisplay">Cyan</span></div>
+        <div class="board-container fade-in-up">
+            <div class="board" id="board"></div>
+        </div>
+        <div style="margin-top:24px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+            <select id="gameMode" class="btn" style="background: rgba(0, 242, 254, 0.1); border: 1px solid var(--neon-cyan); color: var(--neon-cyan); cursor: pointer;" onchange="initBoard()">
+                <option value="pvp">1 vs 1 (Local)</option>
+                <option value="easy">1 vs AI (Easy)</option>
+                <option value="medium">1 vs AI (Medium)</option>
+                <option value="hard">1 vs AI (Hard)</option>
+            </select>
+            <button class="btn" onclick="initBoard()">Reset Game</button>
+            <a href="library.html" class="btn" style="background: transparent; border: 1px solid var(--neon-cyan); color: var(--neon-cyan);">Back to Library</a>
+        </div>
+    </div>
+
+    <script>
+        let game = new Chess();
+        const boardEl = document.getElementById('board');
+        const statusEl = document.getElementById('status');
+        
+        let selectedSquare = null; 
+        let validMoves = []; 
+        let isGameOverState = false;
+        let playerColor = 'w'; 
+        let isTossing = false; 
+
+        const pieceUnicode = {
+            'w': { p: '♙', r: '♖', n: '♘', b: '♗', q: '♕', k: '♔' },
+            'b': { p: '♟', r: '♜', n: '♞', b: '♝', q: '♛', k: '♚' }
+        };
+
+        const colsStr = 'abcdefgh';
+
+        function initBoard() {
+            if (isTossing) return;
+            const mode = document.getElementById('gameMode').value;
+            
+            if (mode !== 'pvp') {
+                performCoinToss(mode);
+            } else {
+                playerColor = 'w';
+                setupGame(mode);
+            }
+        }
+
+        function performCoinToss(mode) {
+            isTossing = true;
+            boardEl.innerHTML = '';
+            
+            const overlay = document.createElement('div');
+            overlay.className = 'coin-overlay';
+            overlay.innerHTML = `
+                <div class="coin" id="coinAnim">?</div>
+                <div class="coin-text" id="coinText">Tossing Coin...</div>
+            `;
+            boardEl.appendChild(overlay);
+
+            statusEl.innerHTML = `Getting Ready...`;
+
+            setTimeout(() => {
+                const isWhite = Math.random() < 0.5;
+                playerColor = isWhite ? 'w' : 'b';
+                
+                const coin = document.getElementById('coinAnim');
+                const text = document.getElementById('coinText');
+                
+                coin.style.animation = 'none';
+                coin.style.transform = 'scaleY(1)';
+                
+                if (isWhite) {
+                    coin.textContent = 'H';
+                    coin.style.boxShadow = '0 0 30px var(--neon-cyan)';
+                    coin.style.background = 'radial-gradient(circle at 30% 30%, #00f2fe, #0088b3)';
+                    text.textContent = 'Heads! You play as Cyan (White)';
+                    text.style.color = 'var(--neon-cyan)';
+                    text.style.textShadow = '0 0 10px var(--neon-cyan)';
+                } else {
+                    coin.textContent = 'T';
+                    coin.style.boxShadow = '0 0 30px var(--neon-magenta)';
+                    coin.style.background = 'radial-gradient(circle at 30% 30%, #f093fb, #b34edb)';
+                    text.textContent = 'Tails! You play as Magenta (Black)';
+                    text.style.color = 'var(--neon-magenta)';
+                    text.style.textShadow = '0 0 10px var(--neon-magenta)';
+                }
+
+                setTimeout(() => {
+                    isTossing = false;
+                    setupGame(mode);
+                }, 2000); 
+            }, 1000); 
+        }
+
+        function setupGame(mode) {
+            game = new Chess();
+            selectedSquare = null;
+            validMoves = [];
+            isGameOverState = false;
+            updateStatus();
+            renderBoard();
+
+            if (mode !== 'pvp' && playerColor === 'b' && game.turn() === 'w') {
+                setTimeout(() => makeAIMove(mode), 400);
+            }
+        }
+
+        function getSquareCoord(r, c) {
+            return colsStr[c] + (8 - r);
+        }
+
+        function updateStatus() {
+            if (game.game_over()) {
+                isGameOverState = true;
+                let message = 'Game Over';
+                if (game.in_checkmate()) {
+                    message = `Checkmate! ${game.turn() === 'w' ? 'Magenta' : 'Cyan'} wins.`;
+                } else if (game.in_draw() || game.in_stalemate() || game.in_threefold_repetition()) {
+                    message = 'Draw!';
+                }
+                statusEl.innerHTML = `<span style="color:#ff6b6b">${message}</span>`;
+            } else {
+                const isCheck = game.in_check() ? ' (Check)' : '';
+                const turnColor = game.turn() === 'w' ? 'Cyan' : 'Magenta';
+                const turnCss = game.turn() === 'w' ? 'var(--neon-cyan)' : 'var(--neon-magenta)';
+                statusEl.innerHTML = `Current Turn: <span style="color:${turnCss}">${turnColor}${isCheck}</span>`;
+            }
+        }
+
+        function renderBoard() {
+            boardEl.innerHTML = '';
+            const b = game.board();
+
+            for(let r=0; r<8; r++) {
+                for(let c=0; c<8; c++) {
+                    const sq = document.createElement('div');
+                    const coord = getSquareCoord(r, c);
+
+                    sq.className = `square ${(r+c)%2===0 ? 'light' : 'dark'}`;
+                    sq.dataset.coord = coord;
+                    
+                    const piece = b[r][c];
+                    if(piece) {
+                        sq.textContent = pieceUnicode[piece.color][piece.type];
+                        sq.classList.add(piece.color === 'w' ? 'piece-w' : 'piece-b');
+                    }
+
+                    if(selectedSquare === coord) {
+                        sq.classList.add('selected');
+                    }
+
+                    const possibleMove = validMoves.find(m => m.to === coord);
+                    if (possibleMove) {
+                        if (piece) {
+                            sq.classList.add('valid-capture');
+                        } else {
+                            sq.classList.add('valid-move');
+                        }
+                    }
+
+                    sq.addEventListener('click', () => handleSquareClick(coord, piece));
+                    boardEl.appendChild(sq);
+                }
+            }
+
+            if (isGameOverState) {
+                const overlay = document.createElement('div');
+                overlay.className = 'game-over-overlay';
+                
+                let winMsg = 'GAME OVER';
+                let winnerColor = '#ff6b6b';
+                
+                if (game.in_checkmate()) {
+                    if (game.turn() === 'w') {
+                        winMsg = 'MAGENTA WINS';
+                        winnerColor = 'var(--neon-magenta)';
+                    } else {
+                        winMsg = 'CYAN WINS';
+                        winnerColor = 'var(--neon-cyan)';
+                    }
+                } else if (game.in_draw() || game.in_stalemate()) {
+                    winMsg = 'DRAW';
+                    winnerColor = 'var(--text-secondary)';
+                }
+
+                overlay.innerHTML = `
+                    <div class="game-over-text" style="color: ${winnerColor}; text-shadow: 0 0 15px ${winnerColor}">${winMsg}</div>
+                    <div class="game-over-sub" style="margin-top:8px; color: var(--neon-cyan);">Press SPACE to Play Again</div>
+                `;
+                boardEl.appendChild(overlay);
+            }
+        }
+
+        function handleSquareClick(coord, piece) {
+            if (isGameOverState) return;
+            const mode = document.getElementById('gameMode').value;
+            if (mode !== 'pvp' && game.turn() !== playerColor) return;
+
+            const move = validMoves.find(m => m.to === coord);
+            if (selectedSquare && move) {
+                let promotion = undefined;
+                // Auto promote to Queen if moving pawn to 8th/1st rank
+                if ((game.get(selectedSquare).type === 'p') && (coord[1] === '8' || coord[1] === '1')) {
+                    promotion = 'q'; 
+                }
+
+                game.move({
+                    from: selectedSquare,
+                    to: coord,
+                    promotion: promotion
+                });
+
+                selectedSquare = null;
+                validMoves = [];
+                updateStatus();
+                renderBoard();
+
+                if (!isGameOverState && mode !== 'pvp' && game.turn() !== playerColor) {
+                    // Slight delay for improved visual feedback
+                    setTimeout(() => makeAIMove(mode), 100);
+                }
+                return;
+            }
+
+            if (piece && piece.color === game.turn()) {
+                if (selectedSquare === coord) {
+                    selectedSquare = null;
+                    validMoves = [];
+                } else {
+                    selectedSquare = coord;
+                    validMoves = game.moves({ square: coord, verbose: true });
+                }
+            } else {
+                selectedSquare = null;
+                validMoves = [];
+            }
+            
+            renderBoard();
+        }
+
+        function makeAIMove(mode) {
+            if (isGameOverState || game.turn() === playerColor) return;
+
+            const moves = game.moves({ verbose: true });
+            if (moves.length === 0) return;
+            
+            let chosenMove;
+
+            if (mode === 'easy') {
+                if (Math.random() < 0.2) {
+                    chosenMove = getBestCaptureMove(moves);
+                } else {
+                    chosenMove = moves[Math.floor(Math.random() * moves.length)];
+                }
+            } else if (mode === 'medium') {
+                chosenMove = getBestCaptureMove(moves);
+            } else if (mode === 'hard') {
+                const bestSan = getMinimaxMove(3);
+                chosenMove = moves.find(m => m.san === bestSan) || getBestCaptureMove(moves);
+            }
+
+            if (!chosenMove) chosenMove = moves[0];
+
+            game.move(chosenMove.san);
+            updateStatus();
+            renderBoard();
+        }
+
+
+
+        function getBestCaptureMove(moves) {
+            const pieceValues = { 'p': 10, 'n': 30, 'b': 30, 'r': 50, 'q': 90, 'k': 900 };
+            moves.forEach(m => {
+                m.score = 0;
+
+                game.move(m.san);
+                if (game.in_checkmate()) m.score += 10000;
+                else if (game.in_check()) m.score += 15;
+                game.undo();
+
+                if (m.captured) m.score += pieceValues[m.captured] || 0;
+                if (m.piece === 'p' && (m.to.includes('d') || m.to.includes('e'))) m.score += 2;
+                if (m.flags.includes('k') || m.flags.includes('q')) m.score += 5;
+                if (m.flags.includes('p')) m.score += 80;
+            });
+            moves.sort((a, b) => b.score - a.score);
+            const bestScore = moves[0].score;
+            const bestMoves = moves.filter(m => m.score === bestScore);
+            return bestMoves[Math.floor(Math.random() * bestMoves.length)];
+        }
+
+        function evaluateBoard(g, depth) {
+            if (g.in_checkmate()) {
+                return g.turn() === 'w' ? 10000 + depth : -10000 - depth;
+            }
+            if (g.in_draw() || g.in_stalemate() || g.in_threefold_repetition()) {
+                return 0; 
+            }
+
+            const pieceValues = { 'p': 10, 'n': 30, 'b': 30, 'r': 50, 'q': 90, 'k': 900 };
+            let evalScore = 0;
+            
+            if (g.in_check()) {
+                evalScore += g.turn() === 'w' ? 15 : -15;
+            }
+
+            const fen = g.fen().split(' ')[0];
+            for (let i = 0; i < fen.length; i++) {
+                const char = fen[i];
+                if (char >= 'a' && char <= 'z') evalScore += pieceValues[char] || 0;
+                else if (char >= 'A' && char <= 'Z') evalScore -= pieceValues[char.toLowerCase()] || 0;
+            }
+            return evalScore;
+        }
+
+        function minimax(g, depth, alpha, beta, isMaximizingPlayer) {
+            if (depth === 0 || g.game_over()) return evaluateBoard(g, depth);
+            
+            const moves = g.moves();
+            if (isMaximizingPlayer) {
+                let bestVal = -Infinity;
+                for (let i = 0; i < moves.length; i++) {
+                    g.move(moves[i]);
+                    bestVal = Math.max(bestVal, minimax(g, depth - 1, alpha, beta, !isMaximizingPlayer));
+                    g.undo();
+                    alpha = Math.max(alpha, bestVal);
+                    if (beta <= alpha) break;
+                }
+                return bestVal;
+            } else {
+                let bestVal = Infinity;
+                for (let i = 0; i < moves.length; i++) {
+                    g.move(moves[i]);
+                    bestVal = Math.min(bestVal, minimax(g, depth - 1, alpha, beta, !isMaximizingPlayer));
+                    g.undo();
+                    beta = Math.min(beta, bestVal);
+                    if (beta <= alpha) break;
+                }
+                return bestVal;
+            }
+        }
+
+        function getMinimaxMove(depth) {
+            const moves = game.moves();
+            if (moves.length === 0) return null;
+            let bestMove = null;
+            
+            const isAIBlack = playerColor === 'w';
+            let bestVal = isAIBlack ? -Infinity : Infinity;
+            
+            moves.sort(() => Math.random() - 0.5);
+
+            for (let i = 0; i < moves.length; i++) {
+                game.move(moves[i]);
+                let val = minimax(game, depth - 1, -Infinity, Infinity, isAIBlack ? false : true);
+                game.undo();
+                
+                if (isAIBlack) {
+                    if (val > bestVal) { bestVal = val; bestMove = moves[i]; }
+                } else {
+                    if (val < bestVal) { bestVal = val; bestMove = moves[i]; }
+                }
+            }
+            return bestMove;
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && isGameOverState) {
+                e.preventDefault();
+                initBoard();
+            }
+        });
+
+        initBoard();
+    </script>
+    <script src="../js/global.js"></script>
+</body>
+</html>

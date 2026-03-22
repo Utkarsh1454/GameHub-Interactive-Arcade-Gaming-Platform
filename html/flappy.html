@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Flappy Bird — GameHub</title>
+  <link rel="stylesheet" href="../css/flappy.css">
+    <link rel="stylesheet" href="../css/global.css">
+</head>
+<body>
+  <h1>Flappy — Neon</h1>
+  <canvas id="game" width="320" height="480"></canvas>
+  <div class="controls">
+    <button id="start" class="btn">Start</button>
+    <button id="restart" class="btn">Restart</button>
+    <a class="home" href="../index.html">← Back</a>
+  </div>
+  <div class="info">Click or press Space to flap. Score: <span id="score">0</span></div>
+
+<script>
+// Neon 2D Flappy
+const canvas = document.getElementById('game'); const ctx = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
+let bird = {x:W*0.25, y:H*0.45, r:10, vy:0}; const gravity = 0.18; const jump = -3.5; let alive=false; let score=0; document.getElementById('score').textContent=0;
+const pipes = []; let frame=0; const pipeGap = 120; const pipeW = 48; const speed = 1.2;
+
+function spawnPipe(){ const gapCenter = 80 + Math.random()*(H - 240); pipes.push({x: W + 20, top: gapCenter - pipeGap/2, passed:false}); }
+
+let isGameOverState = false;
+function reset(){ isGameOverState = false; pipes.length = 0; bird.y = H*0.45; bird.vy = 0; score = 0; frame = 0; alive = false; document.getElementById('score').textContent = score; draw(); }
+
+function step(){ if(!alive) return; frame++; bird.vy += gravity; bird.y += bird.vy; if(frame % 110 === 0) spawnPipe();
+  for(const p of pipes){ p.x -= speed; }
+  // remove off-screen
+  while(pipes.length && pipes[0].x + pipeW < -50){ pipes.shift(); }
+  // collisions & score
+  for(const p of pipes){ if(!p.passed && p.x + pipeW < bird.x){ p.passed = true; score++; document.getElementById('score').textContent = score; }
+    // top pipe rect: (p.x, 0) to (p.x+pipeW, p.top)
+    // bottom pipe rect: (p.x, p.top+pipeGap) to (p.x+pipeW, H)
+    if(bird.x + bird.r > p.x && bird.x - bird.r < p.x + pipeW){ if(bird.y - bird.r < p.top || bird.y + bird.r > p.top + pipeGap){ die(); return; } }
+  }
+  if(bird.y + bird.r > H || bird.y - bird.r < 0){ die(); return; }
+}
+
+function draw(){ // background
+  const g = ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#020617'); g.addColorStop(1,'#041123'); ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+  // pipes neon
+  for(const p of pipes){ ctx.save(); ctx.fillStyle = '#0ef07a'; ctx.shadowBlur = 20; ctx.shadowColor = '#0ef07a'; ctx.fillRect(p.x, 0, pipeW, p.top); ctx.fillRect(p.x, p.top + pipeGap, pipeW, H - (p.top + pipeGap)); ctx.restore(); }
+  // bird
+  ctx.save(); ctx.fillStyle = '#ffd24d'; ctx.shadowBlur = 20; ctx.shadowColor = '#ffd24d'; ctx.beginPath(); ctx.arc(bird.x, bird.y, bird.r, 0, Math.PI*2); ctx.fill(); ctx.restore();
+}
+
+function drawLoop(){ draw(); }
+
+function start(){ if(alive) return; alive = true; loop(); }
+function loop(){ if(alive){ step(); draw(); requestAnimationFrame(loop); } }
+function die(){ 
+  alive=false; 
+  setTimeout(() => {
+    if(score > 0) {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null'); 
+      const name = currentUser ? currentUser.username : 'Guest'; 
+      try{ const raw = localStorage.getItem('leaderboard')||'[]'; const arr = JSON.parse(raw); arr.push({ name, game: 'Neon Flappy', score, date: new Date().toISOString() }); localStorage.setItem('leaderboard', JSON.stringify(arr)); }catch(e){console.error(e);} 
+    }
+    showPlayAgain(); 
+  }, 50);
+}
+
+function showPlayAgain() {
+  isGameOverState = true;
+  ctx.fillStyle = 'rgba(0,0,0,0.7)';
+  ctx.fillRect(0,0,W,H);
+  ctx.fillStyle = '#ffd24d';
+  ctx.font = 'bold 30px Outfit, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.shadowBlur = 10;
+  ctx.shadowColor = '#ffd24d';
+  ctx.fillText('GAME OVER', W/2, H/2 - 10);
+  ctx.fillStyle = '#0ef07a';
+  ctx.font = '20px Outfit, sans-serif';
+  ctx.shadowBlur = 0;
+  ctx.fillText('Press SPACE to Play Again', W/2, H/2 + 25);
+}
+
+function flap(){ bird.vy = jump; }
+
+window.addEventListener('keydown', e=>{ 
+  if(e.code === 'Space' || e.code === 'KeyW' || e.key === 'ArrowUp'){ 
+    e.preventDefault(); 
+    if(isGameOverState){ reset(); start(); return; }
+    if(!alive && !isGameOverState) start(); 
+    flap(); 
+  } 
+});
+canvas.addEventListener('click', ()=>{ 
+  if(isGameOverState){ reset(); start(); return; }
+  if(!alive && !isGameOverState) start(); 
+  flap(); 
+});
+document.getElementById('start').addEventListener('click', ()=>start());
+document.getElementById('restart').addEventListener('click', ()=>{ reset(); start(); });
+reset();
+</script>
+    <script src="../js/global.js"></script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Register — GameHub</title>
+    <link rel="stylesheet" href="../css/auth.css">
+    <link rel="stylesheet" href="../css/global.css">
+</head>
+<body>
+    <header>
+        <a class="logo" href="../index.html">🎮 GameHub</a>
+        <nav>
+            <a href="../index.html">Home</a>
+            <a href="library.html">Library</a>
+        </nav>
+    </header>
+
+    <div class="auth-container">
+        <div class="auth-box">
+            <h1>Join GameHub</h1>
+            <p>Create your account to start playing</p>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="Choose a username" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Create a password (min 6 chars)" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
+                </div>
+                <button type="submit" class="btn">Create Account</button>
+            </form>
+            <p class="auth-link">Already have an account? <a href="login.html">Login here</a></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', (e)=>{
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if(password !== confirmPassword){
+                alert('Passwords do not match');
+                return;
+            }
+            
+            const users = JSON.parse(localStorage.getItem('gameHubUsers') || '[]');
+            
+            if(users.find(u => u.username === username)){
+                alert('Username already taken');
+                return;
+            }
+            
+            if(users.find(u => u.email === email)){
+                alert('Email already registered');
+                return;
+            }
+            
+            users.push({username, email, password, createdAt: new Date().toISOString()});
+            localStorage.setItem('gameHubUsers', JSON.stringify(users));
+            localStorage.setItem('currentUser', JSON.stringify({username, email}));
+            
+            alert(`Account created! Welcome to GameHub, ${username}!`);
+            window.location.href = '../index.html';
+        });
+    </script>
+    <script src="../js/global.js"></script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+/* leaderboard.css - Polished */
+.board {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--glass-shadow);
+  margin-top: 24px;
+}
+
+.board th {
+  background: rgba(0, 242, 254, 0.1);
+  padding: 20px;
+  text-align: left;
+  color: var(--neon-cyan);
+  font-weight: 800;
+  border-bottom: 1px solid rgba(0, 242, 254, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.board td {
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  font-size: 16px;
+  transition: all 0.3s;
+}
+
+.board tr {
+  transition: all 0.3s;
+}
+
+.board tr:last-child td {
+  border-bottom: none;
+}
+
+.board tr:hover {
+  background: rgba(0, 242, 254, 0.05);
+  transform: scale(1.01);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.board tr:hover td {
+  color: var(--text-primary);
+}
+
+.rank {
+  color: var(--neon-magenta);
+  font-weight: 800;
+  font-size: 18px;
+}
+
+.game {
+  color: var(--neon-green);
+  font-weight: 700;
+}
+
+.score {
+  color: var(--neon-cyan);
+  font-weight: 800;
+  font-family: monospace;
+  font-size: 18px;
+}
+
+#adminSection {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 16px 0 0;
+}
+
+@media (max-width: 600px) {
+  .board th, .board td {
+    padding: 12px 10px;
+    font-size: 14px;
+  }
+  .rank, .score {
+    font-size: 14px;
+  }
+}

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Admin Login — GameHub</title>
+    <link rel="stylesheet" href="../css/auth.css">
+    <link rel="stylesheet" href="../css/global.css">
+</head>
+<body>
+    <header>
+        <a class="logo" href="../index.html">🎮 GameHub</a>
+        <nav>
+            <a href="../index.html">Home</a>
+            <a href="library.html">Library</a>
+        </nav>
+    </header>
+
+    <div class="auth-container">
+        <div class="auth-box">
+            <h1>🔐 Admin Panel</h1>
+            <p>Restricted access for administrators only</p>
+            <form id="adminLoginForm">
+                <div class="form-group">
+                    <label for="username">Admin Username</label>
+                    <input type="text" id="username" placeholder="Enter admin username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Admin Password</label>
+                    <input type="password" id="password" placeholder="Enter admin password" required>
+                </div>
+                <button type="submit" class="btn">Login as Admin</button>
+            </form>
+            <p class="auth-link"><a href="../index.html">Back to Home</a></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('adminLoginForm').addEventListener('submit', (e)=>{
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            
+            // Check hardcoded admin credentials (you can change these)
+            if(username === 'admin' && password === 'admin123'){
+                localStorage.setItem('currentUser', JSON.stringify({
+                    username: 'admin',
+                    email: 'admin@gamehub.local',
+                    isAdmin: true
+                }));
+                alert('Welcome, Admin!');
+                window.location.href = 'leaderboard.html';
+            }else{
+                alert('Invalid admin credentials');
+            }
+        });
+    </script>
+    <script src="../js/global.js"></script>
+</body>
+</html>

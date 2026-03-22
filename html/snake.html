@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Snake — GameHub</title>
+    <link rel="stylesheet" href="../css/snake.css">
+    <link rel="stylesheet" href="../css/global.css">
+</head>
+<body>
+    <h1>Snake — Neon</h1>
+    <canvas id="game" width="360" height="360"></canvas>
+    <div class="controls">
+        <button id="start" class="btn">Start</button>
+        <button id="pause" class="btn">Pause</button>
+        <a class="home" href="../index.html">← Back</a>
+    </div>
+    <div class="info">Use arrow keys to move. Score: <span id="score">0</span></div>
+
+    <script>
+    // Neon 2D Snake
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const cell = 20; const cols = W / cell, rows = H / cell;
+    let snake = [{x: Math.floor(cols/2), y: Math.floor(rows/2)}];
+    let dir = {x:0,y:0}; let food = null; let score = 0; let running = false; let tick = 120; let timer = null;
+
+    function placeFood(){ food = {x: Math.floor(Math.random()*cols), y: Math.floor(Math.random()*rows)}; for(const s of snake) if(s.x===food.x && s.y===food.y) return placeFood(); }
+
+    function drawBackground(){ const g = ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#020617'); g.addColorStop(1,'#041123'); ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+      // faint grid
+      ctx.strokeStyle = 'rgba(255,255,255,0.03)'; ctx.lineWidth = 1; for(let i=0;i<=cols;i++){ ctx.beginPath(); ctx.moveTo(i*cell,0); ctx.lineTo(i*cell,H); ctx.stroke(); } for(let j=0;j<=rows;j++){ ctx.beginPath(); ctx.moveTo(0,j*cell); ctx.lineTo(W,j*cell); ctx.stroke(); } }
+
+    function draw(){ drawBackground();
+      // food
+      if(food){ ctx.save(); ctx.shadowBlur = 18; ctx.shadowColor = '#ff6b6b'; ctx.fillStyle = '#ff6b6b'; ctx.beginPath(); ctx.arc(food.x*cell + cell/2, food.y*cell + cell/2, cell*0.35,0,Math.PI*2); ctx.fill(); ctx.restore(); }
+      // snake
+      for(let i=0;i<snake.length;i++){ const s = snake[i]; ctx.save(); ctx.shadowBlur = i===0?30:16; ctx.shadowColor = i===0? '#67e8f9':'#00b4d8'; ctx.fillStyle = i===0? '#9ef2ff' : '#66e0ff'; ctx.fillRect(s.x*cell+2, s.y*cell+2, cell-4, cell-4); ctx.restore(); }
+    }
+
+    function step(){ if(!running) return; const head = {x: (snake[0].x + dir.x + cols) % cols, y: (snake[0].y + dir.y + rows) % rows};
+      // collision
+      for(const s of snake) if(s.x===head.x && s.y===head.y){ gameOver(); return; }
+      snake.unshift(head);
+      if(food && head.x===food.x && head.y===food.y){ score++; document.getElementById('score').textContent = score; placeFood(); }
+      else snake.pop(); draw(); }
+
+    let isGameOverState = false;
+    function start(){ if(running) return; running=true; if(!food) placeFood(); timer = setInterval(step, tick); }
+    function pause(){ if(!running) return; running=false; clearInterval(timer); }
+    function reset(){ isGameOverState = false; snake = [{x: Math.floor(cols/2), y: Math.floor(rows/2)}]; dir={x:0,y:0}; score=0; document.getElementById('score').textContent = score; placeFood(); draw(); }
+    function gameOver(){ pause();
+      setTimeout(() => {
+        if(score > 0) {
+          const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+          const name = currentUser ? currentUser.username : 'Guest';
+          saveScore('Neon Snake', score, name);
+        }
+        showPlayAgain();
+      }, 50);
+    }
+    
+    function showPlayAgain() {
+      isGameOverState = true;
+      ctx.fillStyle = 'rgba(0,0,0,0.7)';
+      ctx.fillRect(0,0,W,H);
+      ctx.fillStyle = '#ff6b6b';
+      ctx.font = 'bold 30px Outfit, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = '#ff6b6b';
+      ctx.fillText('GAME OVER', W/2, H/2 - 10);
+      ctx.fillStyle = '#00f2fe';
+      ctx.font = '20px Outfit, sans-serif';
+      ctx.shadowBlur = 0;
+      ctx.fillText('Press SPACE to Play Again', W/2, H/2 + 25);
+    }
+
+    function saveScore(game, score, name){
+      try{
+        const raw = localStorage.getItem('leaderboard') || '[]';
+        const arr = JSON.parse(raw);
+        arr.push({ name: name || 'Player', game, score, date: new Date().toISOString() });
+        localStorage.setItem('leaderboard', JSON.stringify(arr));
+      }catch(e){ console.error('saveScore error', e); }
+    }
+
+    window.addEventListener('keydown', (e)=>{ 
+      if (e.code === 'Space' && isGameOverState) { reset(); start(); return; }
+      const k = e.key; const cl = k.toLowerCase(); if((k==='ArrowUp' || cl==='w') && dir.y!==1) dir={x:0,y:-1}; if((k==='ArrowDown' || cl==='s') && dir.y!==-1) dir={x:0,y:1}; if((k==='ArrowLeft' || cl==='a') && dir.x!==1) dir={x:-1,y:0}; if((k==='ArrowRight' || cl==='d') && dir.x!==-1) dir={x:1,y:0}; 
+    });
+    document.getElementById('start').addEventListener('click', start);
+    document.getElementById('pause').addEventListener('click', pause);
+
+    // init
+    reset();
+    </script>
+    <script src="../js/global.js"></script>
+</body>
+</html>

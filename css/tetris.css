@@ -1,0 +1,57 @@
+/* tetris.css - Polished */
+.tetris-wrap {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 32px;
+  text-align: center;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--glass-shadow);
+}
+
+.board-container {
+  display: flex;
+  gap: 32px;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+canvas {
+  background: rgba(5, 5, 15, 0.9);
+  border: 4px solid var(--neon-purple);
+  border-radius: 8px;
+  image-rendering: pixelated;
+  box-shadow: 0 0 25px rgba(79, 172, 254, 0.2);
+}
+
+.info {
+  color: var(--text-secondary);
+  text-align: left;
+  font-size: 16px;
+  line-height: 1.6;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  min-width: 250px;
+}
+
+.info p {
+  margin-bottom: 12px;
+}
+
+.info span {
+  color: var(--neon-cyan);
+  font-weight: 800;
+}
+
+@media (max-width: 800px) {
+  .board-container {
+    flex-direction: column;
+    align-items: center;
+  }
+}

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Leaderboard — GameHub</title>
+  <link rel="stylesheet" href="../css/leaderboard.css">
+  <script>
+    window.addEventListener('DOMContentLoaded', ()=>{
+      const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+      const userSection = document.getElementById('userSection');
+      if(currentUser){
+        const adminBadge = currentUser.isAdmin ? ' 🔐 (Admin)' : '';
+        userSection.innerHTML = `<span>Welcome, <strong>${currentUser.username}</strong>${adminBadge}!</span> <button id="logoutBtn" class="btn-logout">Logout</button>`;
+        document.getElementById('logoutBtn').addEventListener('click', ()=>{
+          localStorage.removeItem('currentUser');
+          alert('Logged out!');
+          window.location.reload();
+        });
+      }else{
+        userSection.innerHTML = '<a href="login.html" class="auth-link">Login</a> <a href="register.html" class="auth-link">Register</a> <a href="admin-login.html" class="auth-link">🔐 Admin</a>';
+      }
+    });
+  </script>
+    <link rel="stylesheet" href="../css/global.css">
+</head>
+<body>
+  <header>
+    <a class="logo" href="../index.html">🎮 GameHub</a>
+    <nav>
+      <a href="../index.html">Home</a>
+      <a href="library.html">Library</a>
+      <div id="userSection"></div>
+    </nav>
+  </header>
+
+  <div class="container">
+    <h1>🏆 Top Scores</h1>
+    <div id="board"></div>
+    <div style="margin-top:24px;text-align:center;">
+      <div id="adminSection"></div>
+      <a class="btn" href="library.html" style="margin-left:12px;">Back to Games</a>
+    </div>
+  </div>
+
+  <script>
+    function loadBoard(){
+      const raw = localStorage.getItem('leaderboard') || '[]';
+      let list = JSON.parse(raw);
+      // sort desc
+      list.sort((a,b)=> b.score - a.score);
+      const container = document.getElementById('board');
+      if(list.length===0){ container.innerHTML = '<p style="text-align:center;padding:40px;color:#67e8f9;">🎮 No scores yet. Play a game to add your score!</p>'; return; }
+      let html = '<table class="board"><thead><tr><th>Rank</th><th>Player</th><th>Game</th><th>Score</th><th>Date</th></tr></thead><tbody>';
+      for(let i=0;i<list.length;i++){
+        const r = list[i]; html += `<tr><td class="rank">#${i+1}</td><td>${r.name}</td><td class="game">${r.game}</td><td class="score">${r.score}</td><td>${new Date(r.date).toLocaleString()}</td></tr>`;
+      }
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    window.addEventListener('DOMContentLoaded', ()=>{
+      const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+      const adminSection = document.getElementById('adminSection');
+      
+      if(currentUser && currentUser.isAdmin){
+        // Show admin clear button (re-check admin status on click)
+        adminSection.innerHTML = '<button id="clear" class="btn">🔒 Clear All Scores (Admin)</button>';
+        document.getElementById('clear').addEventListener('click', ()=>{
+          const freshUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+          if(!freshUser || !freshUser.isAdmin){ alert('Unauthorized — admin only'); return; }
+          if(!confirm('⚠️ Are you sure? This will delete ALL leaderboard scores!')) return;
+          localStorage.removeItem('leaderboard');
+          alert('✓ Leaderboard cleared');
+          loadBoard();
+        });
+      }else{
+        // Show admin login link
+        adminSection.innerHTML = '<a href="admin-login.html" class="auth-link">🔐 Admin</a>';
+      }
+    });
+
+    loadBoard();
+  </script>
+    <script src="../js/global.js"></script>
+</body>
+</html>

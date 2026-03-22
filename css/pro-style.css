@@ -1,0 +1,226 @@
+/* Pro Game shared stylesheet */
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+/* Remove default underline from links globally (styles can override per-component) */
+a, a:link, a:visited {
+	text-decoration: none;
+}
+
+html,
+body {
+	height: 100%;
+}
+
+body {
+	background: #0c0c0c;
+	color: #ecf0f1;
+	font-family: Inter, Segoe UI, Arial, Helvetica, sans-serif;
+	display: flex;
+	flex-direction: column;
+}
+
+header {
+	background: #111;
+	padding: 15px 30px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	border-bottom: 1px solid #222;
+}
+
+.logo {
+	font-size: 24px;
+	font-weight: 700;
+	color: #00b4d8;
+}
+
+nav {
+	display: flex;
+	gap: 24px;
+}
+
+nav a {
+	color: inherit;
+	text-decoration: none;
+}
+
+nav a:hover {
+	color: #00b4d8;
+}
+
+.hero {
+	background: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400"><rect fill="%23222" width="1200" height="400"/></svg>');
+	padding: 56px 30px;
+	text-align: center;
+}
+
+.hero h1 {
+	font-size: 42px;
+	margin-bottom: 18px;
+}
+
+.hero p {
+	font-size: 18px;
+	margin-bottom: 22px;
+	color: #dfe8ee;
+}
+
+.btn {
+	background: #00b4d8;
+	color: #031018;
+	padding: 10px 20px;
+	border-radius: 6px;
+	border: none;
+	cursor: pointer;
+	font-weight: 700;
+}
+
+.btn:hover {
+	filter: brightness(0.95);
+}
+
+.container {
+	padding: 40px 30px;
+}
+
+h2 {
+	font-size: 28px;
+	margin-bottom: 18px;
+}
+
+.games-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	gap: 20px;
+}
+
+.game-card {
+	background: #121212;
+	border-radius: 8px;
+	overflow: hidden;
+	transition: transform 0.18s, border-color 0.18s;
+	border: 1px solid transparent;
+}
+
+.game-card:hover {
+	transform: translateY(-6px);
+	border-color: #00b4d8;
+}
+
+.game-image {
+	width: 100%;
+	height: 140px;
+	background: #202020;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 16px;
+	color: #8a8a8a;
+}
+
+.game-info {
+	padding: 14px;
+}
+
+.game-title {
+	font-weight: 700;
+	margin-bottom: 8px;
+}
+
+.game-price {
+	color: #00b4d8;
+	font-weight: 700;
+}
+
+.game-info .btn {
+	display: inline-block;
+	margin-top: 8px;
+}
+
+/* Tabs (for project pages) */
+.tabs {
+	display: flex;
+	gap: 10px;
+	margin-bottom: 18px;
+	border-bottom: 2px solid #191919;
+}
+
+.tab-btn {
+	padding: 10px 18px;
+	background: transparent;
+	border: none;
+	color: #9aa7b3;
+	cursor: pointer;
+	font-weight: 700;
+	border-bottom: 3px solid transparent;
+}
+
+.tab-btn.active {
+	color: #00b4d8;
+	border-bottom-color: #00b4d8;
+}
+
+.tab-content {
+	display: none;
+}
+
+.tab-content.active {
+	display: block;
+}
+
+/* Snake & Flappy shared */
+canvas {
+	display: block;
+	border-radius: 12px;
+}
+
+.controls {
+	margin-top: 14px;
+	display: flex;
+	gap: 8px;
+	align-items: center;
+}
+
+.info {
+	margin-top: 12px;
+	color: #cfd8dc;
+}
+
+a.home {
+	color: inherit;
+	text-decoration: none;
+	padding: 8px 12px;
+	border-radius: 6px;
+	background: #1a1a1a;
+	margin-left: 8px;
+}
+
+/* Snake specifics */
+#game {
+	background: #111;
+	border: 6px solid #171717;
+}
+
+#score {
+	font-weight: 700;
+	color: #fff;
+}
+
+/* Flappy specifics */
+#game {
+	background: linear-gradient(#70c5ce, #32a3a8);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+	.hero h1 {
+		font-size: 28px;
+	}
+	.games-grid {
+		grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+	}
+}

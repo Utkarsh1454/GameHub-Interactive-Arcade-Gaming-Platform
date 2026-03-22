@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Spacewave — GameHub</title>
+    <link rel="stylesheet" href="../css/global.css">
+    <style>
+        .game-wrapper {
+            max-width: 800px;
+            margin: 40px auto;
+            text-align: center;
+        }
+        h1 { margin-bottom: 20px; color: var(--neon-cyan); }
+        canvas {
+            background: rgba(5, 5, 10, 0.9);
+            border: 2px solid var(--neon-magenta);
+            box-shadow: 0 0 20px rgba(240, 147, 251, 0.4);
+            border-radius: 12px;
+            display: block;
+            margin: 0 auto;
+        }
+        .controls-info {
+            margin-top: 16px;
+            color: var(--text-secondary);
+        }
+        .btn-home { margin-top: 24px; }
+    </style>
+</head>
+<body>
+    <header>
+        <a class="logo" href="../index.html">🎮 GameHub</a>
+        <nav>
+            <a href="library.html">Library</a>
+            <a href="leaderboard.html">Leaderboard</a>
+            <div id="userSection"></div>
+        </nav>
+    </header>
+
+    <div class="game-wrapper">
+        <h1 class="fade-in-up">Spacewave</h1>
+        <canvas id="gameCanvas" width="600" height="400"></canvas>
+        <div class="controls-info">Use Left/Right Arrows to move. Space to shoot.</div>
+        <a href="library.html" class="btn btn-home">Back to Library</a>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        let gameLoop;
+        
+        const ship = { x: 300, y: 350, width: 30, height: 30, speed: 6, dx: 0 };
+        const bullets = [];
+        const enemies = [];
+        const particles = [];
+        let score = 0;
+        let isGameOver = false;
+        let hasSavedScore = false;
+
+        document.addEventListener('keydown', (e) => {
+            const kl = e.code;
+            if (kl === 'ArrowLeft' || kl === 'KeyA') ship.dx = -ship.speed;
+            if (kl === 'ArrowRight' || kl === 'KeyD') ship.dx = ship.speed;
+            if (kl === 'Space' || kl === 'KeyW' || kl === 'ArrowUp') {
+                if (e.repeat) return;
+                if (isGameOver) {
+                    resetGame();
+                } else if (bullets.length < 3) {
+                    bullets.push({ x: ship.x, y: ship.y - 15, width: 4, height: 10, speed: 9 });
+                }
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            const kl = e.code;
+            if (kl === 'ArrowLeft' || kl === 'ArrowRight' || kl === 'KeyA' || kl === 'KeyD') ship.dx = 0;
+        });
+
+        function spawnEnemy() {
+            if (Math.random() < 0.04) {
+                enemies.push({
+                    x: Math.random() * (canvas.width - 20) + 10,
+                    y: -20,
+                    speed: Math.random() * 2 + 1.5
+                });
+            }
+        }
+
+        function createParticles(x, y, color) {
+            for(let i=0; i<15; i++) {
+                particles.push({
+                    x, y,
+                    vx: (Math.random() - 0.5) * 5,
+                    vy: (Math.random() - 0.5) * 5,
+                    life: 1,
+                    color
+                });
+            }
+        }
+
+        function drawShape(ctx, x, y, type) {
+            ctx.shadowBlur = 10;
+            if (type === 'ship') {
+                ctx.fillStyle = '#0ef07a';
+                ctx.shadowColor = '#0ef07a';
+                ctx.beginPath();
+                ctx.moveTo(x, y - 15);
+                ctx.lineTo(x + 15, y + 15);
+                ctx.lineTo(x - 15, y + 15);
+                ctx.fill();
+            } else if (type === 'bullet') {
+                ctx.fillStyle = '#00f2fe';
+                ctx.shadowColor = '#00f2fe';
+                ctx.beginPath();
+                ctx.arc(x, y, 4, 0, Math.PI * 2);
+                ctx.fill();
+            } else if (type === 'enemy') {
+                ctx.fillStyle = '#f093fb';
+                ctx.shadowColor = '#f093fb';
+                ctx.fillRect(x - 10, y - 10, 20, 20);
+            }
+            ctx.shadowBlur = 0;
+        }
+
+        function resetGame() {
+            ship.x = 300; ship.y = 350; ship.dx = 0;
+            bullets.length = 0; enemies.length = 0; particles.length = 0;
+            score = 0; isGameOver = false; hasSavedScore = false;
+            update();
+        }
+
+        function update() {
+            if (isGameOver) return;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Move ship
+            ship.x += ship.dx;
+            if (ship.x < 15) ship.x = 15;
+            if (ship.x > canvas.width - 15) ship.x = canvas.width - 15;
+            
+            drawShape(ctx, ship.x, ship.y, 'ship');
+            
+            // Bullets
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                bullets[i].y -= bullets[i].speed;
+                drawShape(ctx, bullets[i].x, bullets[i].y, 'bullet');
+                if (bullets[i].y < 0) bullets.splice(i, 1);
+            }
+            
+            // Enemies
+            spawnEnemy();
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                enemies[i].y += enemies[i].speed;
+                drawShape(ctx, enemies[i].x, enemies[i].y, 'enemy');
+                
+                // Collision with bullets
+                for (let j = bullets.length - 1; j >= 0; j--) {
+                    if (Math.hypot(enemies[i].x - bullets[j].x, enemies[i].y - bullets[j].y) < 18) {
+                        createParticles(enemies[i].x, enemies[i].y, '#f093fb');
+                        enemies.splice(i, 1);
+                        bullets.splice(j, 1);
+                        score += 10;
+                        break;
+                    }
+                }
+                
+                // Check if alive
+                if (enemies[i] && enemies[i].y > canvas.height) {
+                    enemies.splice(i, 1);
+                } else if (enemies[i] && Math.hypot(enemies[i].x - ship.x, enemies[i].y - ship.y) < 22) {
+                    isGameOver = true;
+                }
+            }
+
+            // Particles
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i];
+                p.x += p.vx; p.y += p.vy; p.life -= 0.05;
+                if (p.life <= 0) {
+                    particles.splice(i, 1);
+                } else {
+                    ctx.globalAlpha = p.life;
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.globalAlpha = 1;
+                }
+            }
+            
+            ctx.fillStyle = '#fff';
+            ctx.font = '20px Outfit';
+            ctx.shadowBlur = 0;
+            ctx.fillText('Score: ' + score, 10, 30);
+            
+            if (isGameOver) {
+                if (!hasSavedScore && score > 0) {
+                    hasSavedScore = true;
+                    try {
+                        const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+                        const name = currentUser ? currentUser.username : 'Guest';
+                        const raw = localStorage.getItem('leaderboard') || '[]';
+                        const arr = JSON.parse(raw);
+                        arr.push({ name, game: 'Spacewave', score, date: new Date().toISOString() });
+                        localStorage.setItem('leaderboard', JSON.stringify(arr));
+                    } catch(e){}
+                }
+
+                ctx.fillStyle = 'rgba(0,0,0,0.8)';
+                ctx.fillRect(0,0,canvas.width,canvas.height);
+                ctx.fillStyle = '#f093fb';
+                ctx.font = '800 40px Outfit';
+                ctx.textAlign = 'center';
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = '#f093fb';
+                ctx.fillText('GAME OVER', canvas.width/2, canvas.height/2);
+                ctx.font = '600 20px Outfit';
+                ctx.shadowBlur = 0;
+                ctx.fillStyle = '#00f2fe';
+                ctx.fillText('Press SPACE to Play Again', canvas.width/2, canvas.height/2 + 40);
+            } else {
+                gameLoop = requestAnimationFrame(update);
+            }
+        }
+        
+        update();
+    </script>
+    <script src="../js/global.js"></script>
+</body>
+</html>

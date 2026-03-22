@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Library — GameHub</title>
+    <link rel="stylesheet" href="../css/library.css">
+    <script>
+        window.addEventListener('DOMContentLoaded', ()=>{
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            const userSection = document.getElementById('userSection');
+            if(currentUser){
+                const adminBadge = currentUser.isAdmin ? ' 🔐 (Admin)' : '';
+                userSection.innerHTML = `<span>Welcome, <strong>${currentUser.username}</strong>${adminBadge}!</span> <button id="logoutBtn" class="btn-logout">Logout</button>`;
+                document.getElementById('logoutBtn').addEventListener('click', ()=>{
+                    localStorage.removeItem('currentUser');
+                    alert('Logged out!');
+                    window.location.reload();
+                });
+            }else{
+                userSection.innerHTML = '<a href="login.html" class="auth-link">Login</a> <a href="register.html" class="auth-link">Register</a> <a href="admin-login.html" class="auth-link">🔐 Admin</a>';
+            }
+        });
+    </script>
+    <link rel="stylesheet" href="../css/global.css">
+</head>
+<body>
+    <header>
+        <a class="logo" href="../index.html">🎮 GameHub</a>
+        <nav>
+            <a href="../index.html">Home</a>
+            <a href="leaderboard.html">Leaderboard</a>
+            <div id="userSection"></div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1>Your Game Library</h1>
+        <div class="games-grid">
+            <div class="game-card">
+                <div class="game-image"><img src="../images/snake.png" alt="Neon Snake preview"></div>
+                <div class="game-info">
+                    <div class="game-title">Neon Snake</div>
+                    <div class="game-desc">Guide the neon snake to eat food while avoiding walls and yourself</div>
+                    <a class="btn" href="snake.html">Play Now</a>
+                </div>
+            </div>
+
+            <div class="game-card">
+                <div class="game-image"><img src="../images/flappy.png" alt="Neon Flappy preview"></div>
+                <div class="game-info">
+                    <div class="game-title">Neon Flappy</div>
+                    <div class="game-desc">Navigate through pipes in this thrilling neon bird flight adventure</div>
+                    <a class="btn" href="flappy.html">Play Now</a>
+                </div>
+            </div>
+
+            <div class="game-card">
+                <div class="game-image"><img src="../images/tetris.png" alt="Tetris preview"></div>
+                <div class="game-info">
+                    <div class="game-title">Tetris</div>
+                    <div class="game-desc">Stack falling tetrominoes to clear lines and score points to be able to win</div>
+                    <a class="btn" href="tetris.html">Play Now</a>
+                </div>
+            </div>
+
+            <div class="game-card">
+                <div class="game-image"><img src="../images/chess.png" alt="Neon Chess preview"></div>
+                <div class="game-info">
+                    <div class="game-title">Neon Chess</div>
+                    <div class="game-desc">Strategic gameplay on a beautifully illuminated neon board</div>
+                    <a class="btn" href="chess.html">Play Now</a>
+                </div>
+            </div>
+
+            <div class="game-card">
+                <div class="game-image"><img src="../images/spacewave.png" alt="Spacewave preview"></div>
+                <div class="game-info">
+                    <div class="game-title">Spacewave</div>
+                    <div class="game-desc">Defend the galaxy in this thrilling neon retro space shooter</div>
+                    <a class="btn" href="spacewave.html">Play Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../js/global.js"></script>
+</body>
+</html>

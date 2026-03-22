@@ -1,0 +1,69 @@
+/* snake.css - Polished */
+h1 {
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-top: 40px;
+  margin-bottom: 24px;
+  font-size: 36px;
+  text-align: center;
+}
+
+#game {
+  background: rgba(10, 15, 30, 0.9);
+  border: 2px solid var(--neon-green);
+  border-radius: 12px;
+  max-width: 400px;
+  width: 100%;
+  height: auto;
+  box-shadow: 0 0 30px rgba(14, 240, 122, 0.2), 0 0 50px rgba(14, 240, 122, 0.1) inset;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: block;
+  margin: 0 auto;
+}
+
+.controls {
+  margin-top: 32px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.info {
+  margin-top: 24px;
+  color: var(--neon-cyan);
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+a.home {
+  color: var(--text-primary);
+  text-decoration: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  display: inline-block;
+  transition: all 0.3s;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+a.home:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--neon-magenta);
+  box-shadow: 0 0 20px rgba(240, 147, 251, 0.3);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 600px) {
+  h1 { font-size: 28px; }
+  .controls { gap: 12px; }
+}

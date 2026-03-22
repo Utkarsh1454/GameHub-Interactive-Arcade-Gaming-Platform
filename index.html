@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>GameHub — The Ultimate Pro Gaming Platform</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Experience premium arcade gaming on GameHub. Play classic games like Snake, Tetris, Flappy, and modern hits like Neon Chess and Spacewave directly in your browser.">
+    <meta name="keywords" content="gaming, arcade, neon chess, html5 games, spacewave, tetris, snake, free games, online arcade">
+    <meta name="author" content="GameHub">
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:title" content="GameHub — Pro Gaming Platform">
+    <meta property="og:description" content="Experience premium arcade gaming on GameHub. Play completely free, ad-free.">
+    <meta property="og:image" content="images/hero.png">
+    <meta property="og:type" content="website">
+    
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/global.css">
+</head>
+<body>
+    <header>
+        <a class="logo" href="index.html">🎮 GameHub</a>
+        <nav>
+            <a href="html/library.html">Library</a>
+            <a href="html/leaderboard.html">Leaderboard</a>
+            <a href="html/login.html" id="navLogin">Sign In</a>
+            <div id="userSection"></div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content fade-in-up">
+                <span class="badge">🔥 Now completely Free-to-Play</span>
+                <h1 class="hero-title">Level Up Your <br><span class="glowing-text">Gaming Experience</span></h1>
+                <p class="hero-subtitle">Dive into a premium collection of incredibly stunning, fast-paced arcade classics and modern multiplayer experiences. No latency, pure skill.</p>
+                <div class="cta-section">
+                    <a href="html/library.html" class="btn primary-btn">Explore Library</a>
+                    <a href="html/leaderboard.html" class="btn secondary-btn">View Rankings</a>
+                </div>
+            </div>
+            <div class="hero-graphic fade-in-up" style="animation-delay: 0.2s;">
+                <img src="images/hero.png" alt="Pro Gaming Arcade System Floating in Dark Space">
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features">
+            <h2 class="section-title fade-in-up">Why Play on <span class="glowing-text">GameHub</span>?</h2>
+            <div class="features-grid">
+                <div class="feature-card fade-in-up" style="animation-delay: 0.1s;">
+                    <div class="feature-icon">🚀</div>
+                    <h3>Zero Latency</h3>
+                    <p>All our games are precision-engineered in highly optimized HTML5 Canvas to ensure a perfectly smooth 60 FPS experience every single match.</p>
+                </div>
+                <div class="feature-card fade-in-up" style="animation-delay: 0.2s;">
+                    <div class="feature-icon">🧠</div>
+                    <h3>Advanced AI Opponents</h3>
+                    <p>Challenge our custom-built Minimax algorithm in Neon Chess with three distinct difficulties tailored for every skill level.</p>
+                </div>
+                <div class="feature-card fade-in-up" style="animation-delay: 0.3s;">
+                    <div class="feature-icon">🏆</div>
+                    <h3>Global Leaderboards</h3>
+                    <p>Compete against thousands of players worldwide. Prove your skills and cement your name on the eternal Hall of Fame today.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Showcase Section -->
+        <section class="showcase">
+            <h2 class="section-title fade-in-up">Trending <span class="glowing-text">Games</span></h2>
+            <div class="showcase-grid">
+                <a href="html/chess.html" class="showcase-card fade-in-up" style="animation-delay: 0.1s;">
+                    <img src="images/chess.png" alt="Neon Chess Gameplay Graphic">
+                    <div class="showcase-overlay">
+                        <h3>Neon Chess</h3>
+                        <span>Play Now ➔</span>
+                    </div>
+                </a>
+                <a href="html/spacewave.html" class="showcase-card fade-in-up" style="animation-delay: 0.2s;">
+                    <img src="images/spacewave.png" alt="Spacewave Retro Space Shooter Graphic">
+                    <div class="showcase-overlay">
+                        <h3>Spacewave</h3>
+                        <span>Play Now ➔</span>
+                    </div>
+                </a>
+                <a href="html/tetris.html" class="showcase-card fade-in-up" style="animation-delay: 0.3s;">
+                    <img src="images/tetris.png" alt="Neon Tetris Grid Cover Graphic">
+                    <div class="showcase-overlay">
+                        <h3>Neon Tetris</h3>
+                        <span>Play Now ➔</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Final CTA -->
+        <section class="cta-banner fade-in-up">
+            <h2>Ready to Dominate?</h2>
+            <p>Join the fastest-growing pro gaming platform.</p>
+            <a href="html/register.html" class="btn primary-btn large-btn">Create Free Account</a>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2026 GameHub Platform. All advanced systems functional.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            if (currentUser) {
+                const navLogin = document.getElementById('navLogin');
+                if (navLogin) navLogin.style.display = 'none';
+                const us = document.getElementById('userSection');
+                if (us) {
+                    us.innerHTML = `<span>Welcome, <b style="color:var(--neon-cyan)">${currentUser.username}</b></span> 
+                                    <button class="btn" style="padding:6px 12px; font-size:12px; margin-left:14px; background:rgba(255,107,107,0.1); border-color:#ff6b6b; color:#ff6b6b;" onclick="logout()">Log Out</button>`;
+                }
+            }
+        });
+        function logout(){ localStorage.removeItem('currentUser'); window.location.reload(); }
+    </script>
+    <script src="js/global.js"></script>
+</body>
+</html>

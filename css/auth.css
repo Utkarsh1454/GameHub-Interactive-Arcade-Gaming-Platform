@@ -1,0 +1,121 @@
+/* auth.css - Polished */
+.auth-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+}
+
+.auth-box {
+  width: 100%;
+  max-width: 440px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 48px 40px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 242, 254, 0.1) inset;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-box::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-magenta));
+}
+
+.auth-box h1 {
+  font-size: 36px;
+  margin-bottom: 12px;
+  text-align: center;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--text-primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.auth-box p {
+  color: var(--text-secondary);
+  margin-bottom: 36px;
+  text-align: center;
+  font-size: 15px;
+}
+
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--neon-cyan);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 14px 16px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-size: 15px;
+  transition: all 0.3s;
+  font-family: inherit;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--neon-cyan);
+  background: rgba(0, 242, 254, 0.05);
+  box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
+}
+
+.form-group input::placeholder {
+  color: rgba(176, 212, 227, 0.5);
+}
+
+.auth-box .btn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 14px;
+}
+
+/* Original auth.css had .auth-link as the bottom footer text container. 
+   We renamed it locally here to avoid conflict, but since HTML still has .auth-link, 
+   we just use a more specific selector */
+.auth-box .auth-link {
+  text-align: center;
+  margin-top: 32px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  border: none;
+  padding: 0;
+}
+
+.auth-box .auth-link a {
+  color: var(--neon-magenta);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s;
+  padding: 0;
+  border: none;
+}
+
+.auth-box .auth-link a:hover {
+  text-shadow: 0 0 12px rgba(240, 147, 251, 0.6);
+  background: none;
+}
+
+@media (max-width: 600px) {
+  .auth-box {
+    padding: 32px 24px;
+  }
+}

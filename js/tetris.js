@@ -255,13 +255,14 @@ canvas.addEventListener('touchmove', (e) => {
     // Configurable thresholds for swipes
     if (Math.abs(dx) > 30) {
         playerMove(dx > 0 ? 1 : -1);
-        touchStartX = touch.clientX; // Reset to allow sweeping continuous horizontal moves!
-        touchStartY = touch.clientY;
+        touchStartX = touch.clientX; // Reset only X to allow continuous lateral movement
         touchMoved = true;
-    } else if (dy > 45) {
-        playerDrop(); // Soft drop for sweeping down
-        touchStartX = touch.clientX; 
-        touchStartY = touch.clientY;
+    }
+    
+    // Separate drop logic allowing diagonal sweeping
+    if (dy > 40) {
+        playerDrop();
+        touchStartY = touch.clientY; // Reset only Y
         touchMoved = true;
     }
 }, {passive: false});

@@ -27,17 +27,17 @@
                 <button id="resetBtn" class="btn">Reset</button>
             </div>
         </div>
-        <p style="margin-top:18px;">Controls: ← → rotate: ↑ or X, soft drop: ↓, hard drop: Space</p>
+        <p class="desktop-controls" style="margin-top:18px;">Controls: ← → rotate: ↑ or X, soft drop: ↓, hard drop: Space</p>
         
-        <div class="tetris-mobile-controls">
-            <div class="tmc-left">
-                <button class="tmc-btn" id="t-left">◀</button>
-                <button class="tmc-btn" id="t-down" style="padding-top:24px;">▼</button>
-                <button class="tmc-btn" id="t-right">▶</button>
+        <div class="true-mobile-controls">
+            <div class="dpad-cross">
+                <button class="dpad-btn dpad-up" id="t-rot">↻</button>
+                <button class="dpad-btn dpad-left" id="t-left">◀</button>
+                <button class="dpad-btn dpad-down" id="t-down">▼</button>
+                <button class="dpad-btn dpad-right" id="t-right">▶</button>
             </div>
-            <div class="tmc-right">
-                <button class="tmc-btn action-rotate" id="t-rot">↻ ROTATE</button>
-                <button class="tmc-btn action-drop" id="t-drop">⬇ DROP</button>
+            <div class="action-side">
+                <button class="action-drop" id="t-drop">DROP</button>
             </div>
         </div>
     </main>

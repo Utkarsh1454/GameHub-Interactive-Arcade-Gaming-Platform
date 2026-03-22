@@ -224,30 +224,59 @@ document.getElementById('resetBtn').addEventListener('click', ()=>{
   arena.forEach(row=>row.fill(0)); player.score=0; player.lines=0; updateScore(); draw();
 });
 
-// Mobile Controls
-function bindTetrisTouch(id, action) {
-  const el = document.getElementById(id);
-  if(!el) return;
-  el.addEventListener('touchstart', (e)=>{
-    e.preventDefault();
-    if(action) action();
-  }, {passive: false});
-}
+// Native Canvas Touch Controls
+let touchStartX = null;
+let touchStartY = null;
+let touchMoved = false;
 
-bindTetrisTouch('t-left', () => { if(!isGameOverState) playerMove(-1); });
-bindTetrisTouch('t-right', () => { if(!isGameOverState) playerMove(1); });
-bindTetrisTouch('t-down', () => { if(!isGameOverState) playerDrop(); });
-bindTetrisTouch('t-rot', () => { if(!isGameOverState) playerRotate(1); });
-bindTetrisTouch('t-drop', () => {
+canvas.addEventListener('touchstart', (e) => {
+    e.preventDefault();
     if(isGameOverState) {
+        // Tap canvas to restart identical to hitting 'Space'
         isGameOverState = false;
         arena.forEach(row=>row.fill(0)); player.score=0; player.lines=0; updateScore();
         playerReset(); lastTime=0; requestAnimationFrame(update);
         return;
     }
-    while(!collide(arena, player)){ player.pos.y++; }
-    player.pos.y--; merge(arena, player); playerReset(); sweep(); updateScore();
-    dropCounter = 0; gameAudio.drop();
+    const touch = e.touches[0];
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
+    touchMoved = false;
+}, {passive: false});
+
+canvas.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    if(isGameOverState || touchStartX === null || touchStartY === null) return;
+    
+    const touch = e.touches[0];
+    const dx = touch.clientX - touchStartX;
+    const dy = touch.clientY - touchStartY;
+    
+    // Configurable thresholds for swipes
+    if (Math.abs(dx) > 30) {
+        playerMove(dx > 0 ? 1 : -1);
+        touchStartX = touch.clientX; // Reset to allow sweeping continuous horizontal moves!
+        touchStartY = touch.clientY;
+        touchMoved = true;
+    } else if (dy > 45) {
+        playerDrop(); // Soft drop for sweeping down
+        touchStartX = touch.clientX; 
+        touchStartY = touch.clientY;
+        touchMoved = true;
+    }
+}, {passive: false});
+
+canvas.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    if(isGameOverState) return;
+    
+    // If the finger was just tapped and immediately lifted (no swipe threshold reached) => Rotate
+    if (!touchMoved) {
+        playerRotate(1);
+    }
+    
+    touchStartX = null;
+    touchStartY = null;
 });
 
 playerReset(); draw(); updateScore();

@@ -3,6 +3,9 @@ const ctx = canvas.getContext('2d');
 const scale = 20; // block size
 ctx.scale(scale, scale);
 
+const nextCanvas = document.getElementById('nextCanvas');
+const nextCtx = nextCanvas.getContext('2d');
+
 const arena = createMatrix(12, 20);
 
 function createMatrix(w, h){
@@ -27,6 +30,37 @@ function nextPiece(){
     shuffle(bag);
   }
   return bag.pop();
+}
+
+function getUpcoming() {
+    if(bag.length === 0){
+        bag = pieces.slice();
+        shuffle(bag);
+    }
+    return bag[bag.length - 1]; // Peek
+}
+
+function drawNext() {
+    const type = getUpcoming();
+    const matrix = createPiece(type);
+    nextCtx.clearRect(0,0,nextCanvas.width,nextCanvas.height);
+    
+    // Scale for NEXT piece is ~15 to fit perfectly
+    const bScale = 14;
+    const wRaw = matrix[0].length * bScale;
+    const hRaw = matrix.length * bScale;
+    const xOff = (60 - wRaw) / 2;
+    const yOff = (60 - hRaw) / 2;
+    
+    matrix.forEach((row,y)=>{
+      row.forEach((value,x)=>{
+        if(value!==0){
+          nextCtx.fillStyle = colors[value];
+          // Use matching skeuomorphic colors
+          nextCtx.fillRect(xOff + x*bScale, yOff + y*bScale, bScale - 1, bScale - 1);
+        }
+      });
+    });
 }
 function createPiece(type){
   switch(type){
@@ -136,6 +170,9 @@ function playerReset(){
   player.matrix = createPiece(type);
   player.pos.y = 0;
   player.pos.x = ((arena[0].length / 2)|0) - ((player.matrix[0].length/2)|0);
+  
+  drawNext(); // Draw the newly queued piece into the HUD
+  
   if(collide(arena, player)){
     isGameOverState = true;
     gameAudio.gameOver();
@@ -190,9 +227,13 @@ const colors = [null,'#00f0f0','#0066ff','#0033ff','#ffd700','#b400ff','#00d000'
 
 const player = {pos:{x:0,y:0},matrix:null,score:0,lines:0};
 
+let currentLevel = 1;
 function updateScore(){
   document.getElementById('score').textContent = player.score;
-  document.getElementById('lines').textContent = player.lines;
+  currentLevel = Math.floor(player.lines / 10) + 1;
+  const levelEl = document.getElementById('level');
+  if(levelEl) levelEl.textContent = currentLevel;
+  dropInterval = Math.max(100, 1000 - ((currentLevel - 1) * 80));
 }
 
 document.addEventListener('keydown',(e)=>{
@@ -224,60 +265,42 @@ document.getElementById('resetBtn').addEventListener('click', ()=>{
   arena.forEach(row=>row.fill(0)); player.score=0; player.lines=0; updateScore(); draw();
 });
 
-// Native Canvas Touch Controls
-let touchStartX = null;
-let touchStartY = null;
-let touchMoved = false;
-
-canvas.addEventListener('touchstart', (e) => {
+// --- Touch Overlays for Physical Visual Layout ---
+function bindTetrisTouch(id, action) {
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.addEventListener('touchstart', (e)=>{
     e.preventDefault();
+    // Add physical depression tracking wrapper to the parent if it's a DOM button container
+    // Because .dir-btn handles its own native :active, we add .active-touch explicitly for pure JS manipulation
+    if(el.classList.contains('rotate-btn') || el.classList.contains('drop-btn')) {
+        el.classList.add('active-touch');
+    }
+    if(action) action();
+  }, {passive: false});
+  el.addEventListener('touchend', (e)=>{
+    el.classList.remove('active-touch');
+  });
+  el.addEventListener('touchcancel', (e)=>{
+    el.classList.remove('active-touch');
+  });
+}
+
+bindTetrisTouch('t-left', () => { if(!isGameOverState) playerMove(-1); });
+bindTetrisTouch('t-right', () => { if(!isGameOverState) playerMove(1); });
+bindTetrisTouch('t-up', () => { if(!isGameOverState) playerRotate(1); });
+bindTetrisTouch('t-down', () => { if(!isGameOverState) playerDrop(); });
+bindTetrisTouch('t-rot', () => { if(!isGameOverState) playerRotate(1); });
+bindTetrisTouch('t-drop', () => {
     if(isGameOverState) {
-        // Tap canvas to restart identical to hitting 'Space'
         isGameOverState = false;
         arena.forEach(row=>row.fill(0)); player.score=0; player.lines=0; updateScore();
         playerReset(); lastTime=0; requestAnimationFrame(update);
         return;
     }
-    const touch = e.touches[0];
-    touchStartX = touch.clientX;
-    touchStartY = touch.clientY;
-    touchMoved = false;
-}, {passive: false});
-
-canvas.addEventListener('touchmove', (e) => {
-    e.preventDefault();
-    if(isGameOverState || touchStartX === null || touchStartY === null) return;
-    
-    const touch = e.touches[0];
-    const dx = touch.clientX - touchStartX;
-    const dy = touch.clientY - touchStartY;
-    
-    // Configurable thresholds for swipes
-    if (Math.abs(dx) > 30) {
-        playerMove(dx > 0 ? 1 : -1);
-        touchStartX = touch.clientX; // Reset only X to allow continuous lateral movement
-        touchMoved = true;
-    }
-    
-    // Separate drop logic allowing diagonal sweeping
-    if (dy > 40) {
-        playerDrop();
-        touchStartY = touch.clientY; // Reset only Y
-        touchMoved = true;
-    }
-}, {passive: false});
-
-canvas.addEventListener('touchend', (e) => {
-    e.preventDefault();
-    if(isGameOverState) return;
-    
-    // If the finger was just tapped and immediately lifted (no swipe threshold reached) => Rotate
-    if (!touchMoved) {
-        playerRotate(1);
-    }
-    
-    touchStartX = null;
-    touchStartY = null;
+    while(!collide(arena, player)){ player.pos.y++; }
+    player.pos.y--; merge(arena, player); playerReset(); sweep(); updateScore();
+    dropCounter = 0; gameAudio.drop();
 });
 
 playerReset(); draw(); updateScore();

@@ -1,104 +1,297 @@
-/* tetris.css - Polished */
-.tetris-wrap {
-  max-width: 900px;
-  margin: 40px auto;
-  padding: 32px;
-  text-align: center;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: 20px;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: var(--glass-shadow);
+/* tetris.css - Skeuomorphic Premium Rebuild */
+body {
+  background: radial-gradient(circle at 50% 50%, #0c2049, #030814);
+  color: white;
+  margin: 0;
+  padding: 0;
+  font-family: 'Outfit', sans-serif;
+  min-height: 100vh;
+  touch-action: pan-y;
 }
 
-.board-container {
+.tetris-app {
+  max-width: 500px;
+  margin: 0 auto;
+  min-height: 100vh;
   display: flex;
-  gap: 32px;
-  justify-content: center;
-  align-items: flex-start;
-  flex-wrap: wrap;
+  flex-direction: column;
+  padding: 10px;
+  box-sizing: border-box;
 }
 
-canvas {
-  background: rgba(5, 5, 15, 0.9);
-  border: 4px solid var(--neon-purple);
-  border-radius: 8px;
-  image-rendering: pixelated;
-  box-shadow: 0 0 25px rgba(79, 172, 254, 0.2);
-}
-
-.info {
-  color: var(--text-secondary);
-  text-align: left;
-  font-size: 16px;
-  line-height: 1.6;
-  background: rgba(0, 0, 0, 0.3);
-  padding: 20px;
-  border-radius: 12px;
-  border: 1px solid var(--glass-border);
-  min-width: 250px;
-}
-
-.info p {
-  margin-bottom: 12px;
-}
-/* tetris.css - Polished */
-.tetris-wrap {
-  max-width: 900px;
-  margin: 40px auto;
-  padding: 32px;
-  text-align: center;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: 20px;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: var(--glass-shadow);
-}
-
-.board-container {
+.header-nav {
   display: flex;
-  gap: 32px;
   justify-content: center;
-  align-items: flex-start;
-  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
-canvas {
-  background: rgba(5, 5, 15, 0.9);
-  border: 4px solid var(--neon-purple);
-  border-radius: 8px;
+.nav-btn {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.top-hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10px;
+  margin-bottom: 15px;
+}
+
+.hud-box {
+  background: linear-gradient(180deg, #0f2c60, #081735);
+  border: 2px solid #1a4185;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.1);
+  padding: 8px 15px;
+  text-align: center;
+}
+
+.next-box {
+  width: 70px;
+  height: 90px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stats-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.stat-box {
+  width: 120px;
+}
+
+.hud-title {
+  color: #a3c9ff;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.hud-val {
+  color: white;
+  font-size: 20px;
+  font-weight: 900;
+  text-shadow: 0 0 5px rgba(255,255,255,0.5);
+  margin-top: 4px;
+}
+
+#nextCanvas {
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  width: 40px;
+  height: 40px;
+  margin: 0 auto;
+}
+
+.game-area {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+canvas#tetris {
+  background: rgba(4, 9, 24, 0.9);
+  border: 2px solid #1a4185;
+  border-radius: 4px;
   image-rendering: pixelated;
-  box-shadow: 0 0 25px rgba(79, 172, 254, 0.2);
+  box-shadow: 0 0 30px rgba(0,0,0,0.8);
+  /* The native swipe touch-action block logic must remain on canvas */
   touch-action: none;
   -webkit-touch-callout: none;
+  max-width: 100%;
 }
 
-.info {
-  color: var(--text-secondary);
-  text-align: left;
-  font-size: 16px;
-  line-height: 1.6;
-  background: rgba(0, 0, 0, 0.3);
-  padding: 20px;
-  border-radius: 12px;
-  border: 1px solid var(--glass-border);
-  min-width: 250px;
+.arcade-panel {
+  background: linear-gradient(180deg, #2b3543, #1c232e);
+  border-radius: 24px;
+  padding: 25px 20px;
+  box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), 0 -4px 15px rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  flex: 1;
 }
 
-.info p {
-  margin-bottom: 12px;
+/* CROSS D-PAD */
+.cross-dpad {
+  position: relative;
+  width: 140px;
+  height: 140px;
 }
 
-.info span {
-  color: var(--neon-cyan);
+.dpad-vertical,
+.dpad-horizontal {
+  background: linear-gradient(135deg, #74cdff, #4facfe);
+  box-shadow: inset 0 2px 4px rgba(255,255,255,0.6), inset 0 -4px 6px rgba(0,0,0,0.2), 0 6px 8px rgba(0,0,0,0.5);
+  border-radius: 8px;
+  position: absolute;
+}
+
+.dpad-vertical {
+  width: 46px;
+  height: 140px;
+  left: 47px;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  box-sizing: border-box;
+}
+
+.dpad-horizontal {
+  width: 140px;
+  height: 46px;
+  top: 47px;
+  left: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 8px;
+  box-sizing: border-box;
+}
+
+/* Clear the center crossover double-shadow via a center patch */
+.cross-dpad::after {
+  content: '';
+  position: absolute;
+  top: 47px;
+  left: 47px;
+  width: 46px;
+  height: 46px;
+  background: #57b3fe; /* matches middle gradient */
+  box-shadow: none;
+}
+
+.arrow {
+  color: #a8dfff;
+  font-size: 14px;
+  font-weight: 900;
+  z-index: 2;
+  text-shadow: 0 -1px 0 rgba(0,0,0,0.1);
+  pointer-events: none;
+}
+
+.dir-btn {
+  position: absolute;
+  width: 46px;
+  height: 46px;
+  z-index: 10;
+  border-radius: 8px;
+  cursor: pointer;
+  /* Make them strictly invisible touch overlays */
+  background: transparent;
+  -webkit-tap-highlight-color: transparent;
+}
+.dir-btn:active {
+  background: rgba(0, 0, 0, 0.15);
+  box-shadow: inset 0 4px 6px rgba(0,0,0,0.4);
+}
+
+.dir-up { top: 0; left: 47px; }
+.dir-down { bottom: 0; left: 47px; }
+.dir-left { top: 47px; left: 0; }
+.dir-right { top: 47px; right: 0; }
+
+/* ACTION BUTTONS */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100px;
+}
+
+.arcade-btn {
+  width: 86px;
+  height: 86px;
+  border-radius: 50%;
+  background: #111; /* dark physical base base */
+  box-shadow: 0 6px 10px rgba(0,0,0,0.8), inset 0 2px 2px rgba(255,255,255,0.1);
+  position: relative;
+  border: 1px solid #000;
+}
+
+.arcade-btn-inner {
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  box-shadow: inset 0 3px 5px rgba(255,255,255,0.6), inset 0 -4px 6px rgba(0,0,0,0.2), 0 5px 0px #0b5fb3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.05s ease;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rotate-btn .arcade-btn-inner {
+  background: linear-gradient(135deg, #6ec0ff, #299cf7);
+  box-shadow: inset 0 3px 5px rgba(255,255,255,0.6), inset 0 -4px 6px rgba(0,0,0,0.2), 0 5px 0px #136abc;
+}
+
+.drop-btn .arcade-btn-inner {
+  background: linear-gradient(135deg, #ffd36f, #f79d29);
+  box-shadow: inset 0 3px 5px rgba(255,255,255,0.6), inset 0 -4px 6px rgba(0,0,0,0.2), 0 5px 0px #ba6405;
+}
+
+.arcade-btn:active .arcade-btn-inner, 
+.arcade-btn.active-touch .arcade-btn-inner {
+  top: 7px;
+  box-shadow: inset 0 3px 5px rgba(255,255,255,0.6), inset 0 -4px 6px rgba(0,0,0,0.2), 0 0px 0px transparent;
+}
+
+.arcade-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+
+.arcade-btn .icon {
+  font-size: 22px;
+  font-weight: 900;
+  color: white;
+  text-shadow: 0 2px 2px rgba(0,0,0,0.3);
+}
+
+.arcade-btn .label {
+  font-size: 9px;
   font-weight: 800;
+  color: white;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+  letter-spacing: 0.5px;
 }
 
-@media (max-width: 800px) {
-  .board-container {
-    flex-direction: column;
-    align-items: center;
-  }
+.desktop-controls {
+  text-align: center; 
+  font-size: 13px; 
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 20px;
+}
+
+@media (max-width: 600px) {
+  .tetris-app { padding: 5px; }
+  canvas#tetris { max-height: calc(100vh - 350px); width: auto; object-fit: contain; }
+  .cross-dpad { transform: scale(0.9); transform-origin: left center; }
+  .action-buttons { transform: scale(0.9); transform-origin: right center; }
 }

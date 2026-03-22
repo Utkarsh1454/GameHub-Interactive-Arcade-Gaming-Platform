@@ -16,18 +16,75 @@
         </nav>
     </header>
 
-    <main class="tetris-wrap">
-        <h1>Tetris</h1>
-        <div class="board-container">
-            <canvas id="tetris" width="240" height="400"></canvas>
-            <div class="info">
-                <div>Score: <span id="score">0</span></div>
-                <div>Lines: <span id="lines">0</span></div>
-                <button id="startBtn" class="btn">Start</button>
-                <button id="resetBtn" class="btn">Reset</button>
+    <main class="tetris-app">
+        <div class="header-nav">
+             <button id="startBtn" class="nav-btn">Start</button>
+             <button id="resetBtn" class="nav-btn">Reset</button>
+             <a class="nav-btn" href="../index.html">Exit</a>
+        </div>
+
+        <div class="top-hud">
+            <div class="hud-box next-box">
+                <div class="hud-title">NEXT</div>
+                <div class="hud-val next-canvas-container">
+                    <canvas id="nextCanvas" width="60" height="60"></canvas>
+                </div>
+            </div>
+            
+            <div class="stats-col">
+                <div class="hud-box stat-box">
+                    <div class="hud-title">SCORE</div>
+                    <div class="hud-val" id="score">0</div>
+                </div>
+                <div class="hud-box stat-box">
+                    <div class="hud-title">LEVEL</div>
+                    <div class="hud-val" id="level">1</div>
+                </div>
             </div>
         </div>
-        <p class="desktop-controls" style="margin-top:18px;">Controls: ← → rotate: ↑, drop: ↓, hard drop: Space, Mobile: Swipe/Tap</p>
+        
+        <div class="game-area">
+            <canvas id="tetris" width="240" height="400"></canvas>
+        </div>
+        
+        <div class="arcade-panel">
+            <div class="cross-dpad">
+                <div class="dpad-vertical">
+                    <div class="arrow arrow-up">▲</div>
+                    <div class="arrow arrow-down">▼</div>
+                </div>
+                <div class="dpad-horizontal">
+                    <div class="arrow arrow-left">◀</div>
+                    <div class="arrow arrow-right">▶</div>
+                </div>
+                
+                <!-- Invisible Touch Zones covering exactly the cross arms -->
+                <div class="dir-btn dir-up" id="t-up"></div>
+                <div class="dir-btn dir-right" id="t-right"></div>
+                <div class="dir-btn dir-down" id="t-down"></div>
+                <div class="dir-btn dir-left" id="t-left"></div>
+            </div>
+            
+            <div class="action-buttons">
+                <div class="arcade-btn rotate-btn" id="t-rot">
+                    <div class="arcade-btn-inner">
+                        <div class="arcade-content">
+                            <span class="icon">Q</span>
+                            <span class="label">ROTATE</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="arcade-btn drop-btn" id="t-drop">
+                    <div class="arcade-btn-inner">
+                        <div class="arcade-content">
+                            <span class="icon">⬇</span>
+                            <span class="label">HARD DROP</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p class="desktop-controls" style="margin-top:18px;">Controls: ← → rotate: ↑, drop: ↓, hard drop: Space</p>
     </main>
 
     <script src="../js/tetris.js"></script>

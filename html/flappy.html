@@ -34,7 +34,7 @@ function step(){ if(!alive) return; frame++; bird.vy += gravity; bird.y += bird.
   // remove off-screen
   while(pipes.length && pipes[0].x + pipeW < -50){ pipes.shift(); }
   // collisions & score
-  for(const p of pipes){ if(!p.passed && p.x + pipeW < bird.x){ p.passed = true; score++; document.getElementById('score').textContent = score; gameAudio.scoreCoin(); }
+  for(const p of pipes){ if(!p.passed && p.x + pipeW < bird.x){ p.passed = true; score += 10; document.getElementById('score').textContent = score; gameAudio.scoreCoin(); }
     // top pipe rect: (p.x, 0) to (p.x+pipeW, p.top)
     // bottom pipe rect: (p.x, p.top+pipeGap) to (p.x+pipeW, H)
     if(bird.x + bird.r > p.x && bird.x - bird.r < p.x + pipeW){ if(bird.y - bird.r < p.top || bird.y + bird.r > p.top + pipeGap){ die(); return; } }

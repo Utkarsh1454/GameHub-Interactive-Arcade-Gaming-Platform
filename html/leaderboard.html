@@ -51,9 +51,18 @@
       list.sort((a,b)=> b.score - a.score);
       const container = document.getElementById('board');
       if(list.length===0){ container.innerHTML = '<p style="text-align:center;padding:40px;color:#67e8f9;">🎮 No scores yet. Play a game to add your score!</p>'; return; }
-      let html = '<table class="board"><thead><tr><th>Rank</th><th>Player</th><th>Game</th><th>Score</th><th>Date</th></tr></thead><tbody>';
+      let html = '<table class="board"><thead><tr><th>Rank</th><th>Player</th><th>Game</th><th>Points / Outcome</th><th>Date</th></tr></thead><tbody>';
       for(let i=0;i<list.length;i++){
-        const r = list[i]; html += `<tr><td class="rank">#${i+1}</td><td>${r.name}</td><td class="game">${r.game}</td><td class="score">${r.score}</td><td>${new Date(r.date).toLocaleString()}</td></tr>`;
+        const r = list[i]; 
+        let displayVal = '';
+        if (r.game === 'Neon Chess' || r.game === 'Chess') {
+            displayVal = r.outcome || (r.score > 0 ? 'Win' : 'Loss');
+        } else {
+            let rawScore = r.score || 0;
+            displayVal = rawScore + ' pts';
+        }
+        
+        html += `<tr><td class="rank">#${i+1}</td><td>${r.name}</td><td class="game">${r.game}</td><td class="score" style="color:var(--neon-green);">${displayVal}</td><td>${new Date(r.date).toLocaleString()}</td></tr>`;
       }
       html += '</tbody></table>';
       container.innerHTML = html;

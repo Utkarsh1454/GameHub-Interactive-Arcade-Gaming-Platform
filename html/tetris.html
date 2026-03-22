@@ -29,15 +29,15 @@
         </div>
         <p style="margin-top:18px;">Controls: ← → rotate: ↑ or X, soft drop: ↓, hard drop: Space</p>
         
-        <div class="mobile-controls centered" style="margin-top: 24px; gap: 30px;">
-            <div class="d-pad">
-                <div class="btn-touch d-left" id="t-left">◀</div>
-                <div class="btn-touch d-right" id="t-right">▶</div>
-                <div class="btn-touch d-down" id="t-down">▼</div>
+        <div class="tetris-mobile-controls">
+            <div class="tmc-left">
+                <button class="tmc-btn" id="t-left">◀</button>
+                <button class="tmc-btn" id="t-down" style="padding-top:24px;">▼</button>
+                <button class="tmc-btn" id="t-right">▶</button>
             </div>
-            <div class="action-btns">
-                <div class="btn-touch" id="t-rot" style="font-size:28px;">↻</div>
-                <div class="btn-touch" id="t-drop" style="width: 70px; height: 70px; font-size: 14px; font-weight: bold;">DROP</div>
+            <div class="tmc-right">
+                <button class="tmc-btn action-rotate" id="t-rot">↻ ROTATE</button>
+                <button class="tmc-btn action-drop" id="t-drop">⬇ DROP</button>
             </div>
         </div>
     </main>

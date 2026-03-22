@@ -39,6 +39,7 @@
 
     <div class="game-wrapper">
         <h1 class="fade-in-up">Spacewave</h1>
+        <div id="scoreDisplay" style="font-size: 24px; font-weight: 800; color: var(--neon-cyan); margin-bottom: 16px; text-shadow: 0 0 10px var(--neon-cyan); letter-spacing: 2px;">SCORE: 0</div>
         <canvas id="gameCanvas" width="600" height="400"></canvas>
         <div class="controls-info">Use Left/Right Arrows to move. Space to shoot.</div>
 
@@ -203,10 +204,7 @@
                 }
             }
             
-            ctx.fillStyle = '#fff';
-            ctx.font = '20px Outfit';
-            ctx.shadowBlur = 0;
-            ctx.fillText('Score: ' + score, 10, 30);
+            document.getElementById('scoreDisplay').textContent = 'SCORE: ' + score;
             
             if (isGameOver) {
                 if (!hasSavedScore && score > 0) {

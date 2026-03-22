@@ -191,6 +191,7 @@
         let isGameOverState = false;
         let playerColor = 'w'; 
         let isTossing = false; 
+        let hasSavedScore = false;
 
         const pieceUnicode = {
             'w': { p: '♙', r: '♖', n: '♘', b: '♗', q: '♕', k: '♔' },
@@ -263,6 +264,7 @@
             selectedSquare = null;
             validMoves = [];
             isGameOverState = false;
+            hasSavedScore = false;
             updateStatus();
             renderBoard();
 
@@ -279,12 +281,34 @@
             if (game.game_over()) {
                 isGameOverState = true;
                 let message = 'Game Over';
+                let isWin = false;
+                let isDraw = false;
+
                 if (game.in_checkmate()) {
                     message = `Checkmate! ${game.turn() === 'w' ? 'Magenta' : 'Cyan'} wins.`;
+                    isWin = (game.turn() !== playerColor);
                 } else if (game.in_draw() || game.in_stalemate() || game.in_threefold_repetition()) {
                     message = 'Draw!';
+                    isDraw = true;
                 }
                 statusEl.innerHTML = `<span style="color:#ff6b6b">${message}</span>`;
+                
+                const mode = document.getElementById('gameMode').value;
+                if (!hasSavedScore && mode !== 'pvp') {
+                    hasSavedScore = true;
+                    try {
+                        const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+                        const name = currentUser ? currentUser.username : 'Guest';
+                        const raw = localStorage.getItem('leaderboard') || '[]';
+                        const arr = JSON.parse(raw);
+                        
+                        let outcomeStr = isWin ? 'Win' : (isDraw ? 'Draw' : 'Loss');
+                        let scoreValue = isWin ? 1000000 : (isDraw ? 500000 : 0);
+                        
+                        arr.push({ name, game: 'Neon Chess', score: scoreValue, outcome: outcomeStr, date: new Date().toISOString() });
+                        localStorage.setItem('leaderboard', JSON.stringify(arr));
+                    } catch(e){}
+                }
             } else {
                 const isCheck = game.in_check() ? ' (Check)' : '';
                 const turnColor = game.turn() === 'w' ? 'Cyan' : 'Magenta';

@@ -14,7 +14,8 @@ def patch_file(filepath, css_path, js_path):
             
     if js_path not in content:
         if '</body>' in content:
-            content = content.replace('</body>', f'    <script src="{js_path}"></script>\n</body>')
+            audio_path = js_path.replace('global.js', 'audio.js')
+            content = content.replace('</body>', f'    <script src="{audio_path}"></script>\n    <script src="{js_path}"></script>\n</body>')
             modified = True
             
     if modified:

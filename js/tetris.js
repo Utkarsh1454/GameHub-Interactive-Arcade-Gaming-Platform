@@ -103,11 +103,18 @@ function sweep(){
     player.lines += 1;
     rowCount *= 2;
   }
+  if (rowCount > 1) { // Means lines were cleared
+      gameAudio.lineClear();
+  }
 }
 
 function playerMove(dir){
   player.pos.x += dir;
-  if(collide(arena, player)) player.pos.x -= dir;
+  if(collide(arena, player)){
+      player.pos.x -= dir;
+  } else {
+      gameAudio.move();
+  }
 }
 
 function playerRotate(dir){
@@ -119,6 +126,7 @@ function playerRotate(dir){
     offset = -(offset + (offset>0?1:-1));
     if(offset > player.matrix[0].length){ rotate(player.matrix, -dir); player.pos.x = pos; return; }
   }
+  gameAudio.rotate();
 }
 
 let isGameOverState = false;
@@ -130,6 +138,7 @@ function playerReset(){
   player.pos.x = ((arena[0].length / 2)|0) - ((player.matrix[0].length/2)|0);
   if(collide(arena, player)){
     isGameOverState = true;
+    gameAudio.gameOver();
     if (player.score > 0) {
       setTimeout(() => {
         const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
@@ -204,6 +213,7 @@ document.addEventListener('keydown',(e)=>{
     while(!collide(arena, player)){ player.pos.y++; }
     player.pos.y--; merge(arena, player); playerReset(); sweep(); updateScore();
     dropCounter = 0;
+    gameAudio.drop();
   }
 });
 

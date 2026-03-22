@@ -34,7 +34,7 @@ function step(){ if(!alive) return; frame++; bird.vy += gravity; bird.y += bird.
   // remove off-screen
   while(pipes.length && pipes[0].x + pipeW < -50){ pipes.shift(); }
   // collisions & score
-  for(const p of pipes){ if(!p.passed && p.x + pipeW < bird.x){ p.passed = true; score++; document.getElementById('score').textContent = score; }
+  for(const p of pipes){ if(!p.passed && p.x + pipeW < bird.x){ p.passed = true; score++; document.getElementById('score').textContent = score; gameAudio.scoreCoin(); }
     // top pipe rect: (p.x, 0) to (p.x+pipeW, p.top)
     // bottom pipe rect: (p.x, p.top+pipeGap) to (p.x+pipeW, H)
     if(bird.x + bird.r > p.x && bird.x - bird.r < p.x + pipeW){ if(bird.y - bird.r < p.top || bird.y + bird.r > p.top + pipeGap){ die(); return; } }
@@ -56,6 +56,7 @@ function start(){ if(alive) return; alive = true; loop(); }
 function loop(){ if(alive){ step(); draw(); requestAnimationFrame(loop); } }
 function die(){ 
   alive=false; 
+  gameAudio.gameOver();
   setTimeout(() => {
     if(score > 0) {
       const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null'); 
@@ -82,7 +83,7 @@ function showPlayAgain() {
   ctx.fillText('Press SPACE to Play Again', W/2, H/2 + 25);
 }
 
-function flap(){ bird.vy = jump; }
+function flap(){ bird.vy = jump; gameAudio.jump(); }
 
 window.addEventListener('keydown', e=>{ 
   if(e.code === 'Space' || e.code === 'KeyW' || e.key === 'ArrowUp'){ 
@@ -101,6 +102,7 @@ document.getElementById('start').addEventListener('click', ()=>start());
 document.getElementById('restart').addEventListener('click', ()=>{ reset(); start(); });
 reset();
 </script>
+    <script src="../js/audio.js"></script>
     <script src="../js/global.js"></script>
 </body>
 </html>

@@ -43,7 +43,7 @@
       // collision
       for(const s of snake) if(s.x===head.x && s.y===head.y){ gameOver(); return; }
       snake.unshift(head);
-      if(food && head.x===food.x && head.y===food.y){ score++; document.getElementById('score').textContent = score; placeFood(); }
+      if(food && head.x===food.x && head.y===food.y){ score++; document.getElementById('score').textContent = score; placeFood(); gameAudio.eat(); }
       else snake.pop(); draw(); }
 
     let isGameOverState = false;
@@ -51,6 +51,7 @@
     function pause(){ if(!running) return; running=false; clearInterval(timer); }
     function reset(){ isGameOverState = false; snake = [{x: Math.floor(cols/2), y: Math.floor(rows/2)}]; dir={x:0,y:0}; score=0; document.getElementById('score').textContent = score; placeFood(); draw(); }
     function gameOver(){ pause();
+      gameAudio.gameOver();
       setTimeout(() => {
         if(score > 0) {
           const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
@@ -96,6 +97,7 @@
     // init
     reset();
     </script>
+    <script src="../js/audio.js"></script>
     <script src="../js/global.js"></script>
 </body>
 </html>
